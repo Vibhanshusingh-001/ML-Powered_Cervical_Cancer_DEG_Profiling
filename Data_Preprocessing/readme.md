@@ -63,8 +63,21 @@ expr_matrix <- exprs(normalized_data)
 
 ---
 
+
+
 ## ✅ When Should You Use RMA?
 
 * If you are working with raw **Affymetrix CEL files**.
 * When you need high-quality, reproducible gene expression data for reliable biological conclusions.
+# Comparison of Boxplots: Pre-Normalization vs Post-Normalization
+
+## Pre-Normalization
+<img width="600" height="500" alt="Boxplot_Pre-Normalization" src="https://github.com/user-attachments/assets/d97683cb-4cc6-4e28-bcf3-d2e62be95967" />
+
+
+## Post-Normalization
+<img width="600" height="500" alt="Boxplot_Post-Normalization" src="https://github.com/user-attachments/assets/b338488b-9293-47a6-b527-2ef05d5371bb" />
+
+---
+
 
