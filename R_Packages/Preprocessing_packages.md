@@ -9,7 +9,6 @@ The **R.utils** package provides various utility functions to facilitate program
 * Logging
 * System operations
 * Other useful helper functions
-
 ---
 
 ## 🔧 Common Features of R.utils
