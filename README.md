@@ -1,69 +1,125 @@
-# 🧬 Cervical-Cancer-DEG-Analysis-Using-ML
+
+# 🧬 **Cervical Cancer DEG Analysis using Machine Learning**  
+
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)  
+![Status](https://img.shields.io/badge/Status-Active-success?style=for-the-badge)  
+![Python](https://img.shields.io/badge/Python-3.8-blue?style=for-the-badge)  
+![R](https://img.shields.io/badge/R-4.2.2-orange?style=for-the-badge)
 
 ---
 
-## 🧠 About Cervical Cancer
+## 💡 **About Cervical Cancer**
 
-Cervical cancer is a malignant tumor of the cervix, primarily caused by **persistent infection with high-risk types of human papillomavirus (HPV)**. It is the **fourth most common cancer in women worldwide**.  
-Early detection through **gene expression profiling** and **biomarker discovery** can significantly improve diagnosis and treatment strategies.
+Cervical cancer is a **malignant tumor of the cervix**, primarily caused by **persistent infection with high-risk HPV types**.  
+🌍 It ranks as the **4th most common cancer in women worldwide**.
+
+🔬 Early detection via **gene expression profiling** and **biomarker discovery** plays a crucial role in enhancing diagnosis, treatment decisions, and survival rates.
 
 ---
 
-## 🎯 Project Overview
+## 🚀 **Project Goal**
 
-This project focuses on analyzing gene expression data for **Cervical Cancer** using **microarray data (Affymetrix platform)**.  
-It includes:
+Develop a robust pipeline to analyze **Cervical Cancer gene expression data** and apply **machine learning models** for accurate classification of samples into **Normal vs. Cancer** groups.
 
+---
+
+## ✅ **What’s Inside This Project?**
+
+✔️ Data Preprocessing:  
 - RMA normalization  
-- Exploratory analysis (PCA, boxplots)  
-- DEG identification using `limma`  
-- Annotation with gene symbols  
-- Visualizations: Volcano plot & heatmap  
-- ML-based classification using **kNN**, **SVM**, and **Random Forest**
+- Quality control with boxplots & PCA visualization  
+
+✔️ Differential Expression Analysis:  
+- Identify DEGs using `limma`  
+- Annotate probes to gene symbols  
+
+✔️ Visualization:  
+- Volcano plot  
+- Expression heatmap  
+
+✔️ Machine Learning Models:  
+- k-Nearest Neighbors (kNN)  
+- Support Vector Machine (SVM – Radial Kernel)  
+- Random Forest Classifier  
 
 ---
 
-## 📂 Dataset Details
+## 📂 **Dataset Details**
 
-- **Source**: [GEO Database](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63514)  
-- **Accession ID**: GSE63514  
-- **Platform**: Affymetrix Human Genome U133 Plus 2.0 Array  
-- **Samples**: 10 Normal + 10 Cervical Cancer
+| 📁 **Source** | GEO Database |
+|-------------|-------------|
+| 🆔 **Accession ID** | GSE63514 |
+| 🧱 **Platform** | Affymetrix Human Genome U133 Plus 2.0 Array |
+| 👥 **Samples** | 10 Normal + 10 Cervical Cancer |
+
+🔗 [Explore the Dataset on GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63514)
+
+---
+
+## 🧱 **Workflow Summary**
+
+### 1️⃣ Data Loading & Normalization  
+- Load `.CEL` files via `ReadAffy`  
+- Perform **RMA normalization**  
+- Export processed expression data:  
+  ➡️ `ExpSet_PostNorm.csv`
+
+### 2️⃣ Exploratory Data Analysis (EDA)  
+- 📊 Boxplots: Expression distribution before & after normalization  
+- 🎯 PCA plots: Visual group separation (Normal vs. Cancer)
+
+### 3️⃣ DEG Analysis  
+- Linear modeling with `limma`  
+- Define contrast: **Cervical Cancer – Normal**  
+- Filter DEGs by `logFC` & adjusted p-value  
+- Export results:  
+    - `Result_Table_logFCsorted.csv`  
+    - `finalDEGs.csv`  
+- Annotate using `hgu133plus2.db`
+
+### 4️⃣ Heatmap Visualization  
+- Select highly significant DEGs (|logFC| ≥ 2.5)  
+- Plot heatmap: Expression patterns across samples
+
+### 5️⃣ Machine Learning Pipeline  
+- Prepare labeled dataset  
+- Train/test split (60%/40%)  
+- Apply models:  
+    - 🧱 **kNN**  
+    - ⚛️ **SVM (Radial Kernel)**  
+    - 🌳 **Random Forest**  
+- Evaluate:  
+    - 📈 Accuracy  
+    - ✅ Confusion Matrix  
+    - ⭐ Feature Importance
 
 ---
 
-## 🚀 Workflow Summary
+## 📜 **License**
 
-### 1. Load Data & Normalize
-- Read raw `.CEL` files using `ReadAffy`
-- Perform RMA normalization with `affy`
-- Export normalized expression matrix (`ExpSet_PostNorm.csv`)
-
-### 2. Visualization
-- **Boxplots**: Compare expression distributions pre- and post-normalization
-- **PCA Plot**: Visualize group separation (Normal vs. Cancer)
-
-### 3. Differential Gene Expression (DEG) Analysis
-- Use `limma` for linear modeling
-- Create contrast matrix: `Cervical Cancer - Normal`
-- Extract top DEGs by `logFC` and `adjusted p-value`
-- Export DEG results (`Result_Table_logFCsorted.csv` and `finalDEGs.csv`)
-- Annotate probe IDs to gene symbols using `hgu133plus2.db`
-
-### 4. Heatmap
-- Filter highly upregulated/downregulated genes (|logFC| ≥ 2.5)
-- Generate expression heatmap using `heatmap.2`
-
-### 5. Machine Learning Models
-- Prepare labeled dataset using DEG expression values
-- Split into training and testing sets (60/40)
-- Apply:
-  - **kNN (k-Nearest Neighbors)**
-  - **SVM (Support Vector Machine - Radial Kernel)**
-  - **Random Forest**
-- Evaluate using:
-  - Accuracy
-  - Confusion matrix
-  - Feature importance plots
+This project is licensed under the **MIT License** — Feel free to use and modify!  
+🔓 Open-source & community-driven.
 
 ---
+
+## 🤝 **Contribute**
+
+We ❤️ community contributions!  
+Follow these simple steps:  
+1. 🍴 Fork the repository  
+2. 🌿 Create a feature branch  
+3. 🚀 Open a pull request
+
+---
+
+## 👨‍💻 **About Me**
+
+**Vibhanshu Singh**  
+🔧 Developer & Maintainer of **MetaOmics-ML**  
+
+📧 [vibhanshusingh78@gmail.com](mailto:vibhanshusingh78@gmail.com)  
+🌐 [GitHub: Vibhanshusingh-001](https://github.com/Vibhanshusingh-001)
+
+---
+
+⭐ If this project helps you, consider giving it a star!
