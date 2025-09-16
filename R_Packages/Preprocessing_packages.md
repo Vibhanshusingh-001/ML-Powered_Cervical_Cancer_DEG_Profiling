@@ -1,17 +1,15 @@
 
 
-## ✅ What is the **R.utils** Package?
+## 1. What is the **R.utils** Package?
 
-The **R.utils** package provides various utility functions to facilitate programming in R, including:
-
+The **R.utils** package provides various utility functions :
 * File and directory manipulation
 * Argument parsing
 * Logging
 * System operations
 * Other useful helper functions
 ---
-
-## 🔧 Common Features of R.utils
+##  Common Features of R.utils
 
 | Feature              | Example Function                           |
 | -------------------- | ------------------------------------------ |
@@ -25,21 +23,7 @@ The **R.utils** package provides various utility functions to facilitate program
 ---
 
 
-### ✅ 1. **R.utils**
-
-* Provides utility functions to ease R programming.
-* Common uses:
-
-  * File manipulation: `copyFile()`, `deleteFile()`
-  * Directory management: `copyDirectory()`, `moveDirectory()`
-  * Logging & verbose output: `verbose()`
-  * Command-line argument parsing: `commandArgs(asValues = TRUE)`
-  * Timer utilities: `timerStart()`, `timerStop()`
-* Useful when building large pipelines or automating workflows in R.
-
----
-
-### ✅ 2. **limma**
+### 2. **limma**
 
 * **Purpose**: Linear Models for Microarray Data.
 * Primarily used for analyzing gene expression data, especially from microarrays.
@@ -48,12 +32,11 @@ The **R.utils** package provides various utility functions to facilitate program
   * Differential expression analysis using linear models.
   * `lmFit()`, `eBayes()`, `topTable()`
 * Example use case:
-
   * Comparing gene expression between experimental conditions.
 
 ---
 
-### ✅ 3. **affy**
+###  3. **affy**
 
 * **Purpose**: Analysis of Affymetrix microarray data.
 * Key features:
@@ -69,7 +52,7 @@ The **R.utils** package provides various utility functions to facilitate program
 
 ---
 
-### ✅ 4. **affyPLM**
+###  4. **affyPLM**
 
 * **Purpose**: Probe-level modeling for quality assessment of Affymetrix microarrays.
 * Focus:
@@ -84,7 +67,7 @@ The **R.utils** package provides various utility functions to facilitate program
 
 ---
 
-### ✅ 5. **hgu133plus2.db**
+###  5. **hgu133plus2.db**
 
 * **Purpose**: Annotation package for the Affymetrix Human Genome U133 Plus 2.0 Array.
 * Provides mappings:
@@ -99,7 +82,7 @@ The **R.utils** package provides various utility functions to facilitate program
 
 ---
 
-### ✅ 6. **hgu133plus2cdf**
+###  6. **hgu133plus2cdf**
 
 * **Purpose**: Chip Definition File (CDF) package for Affymetrix Human Genome U133 Plus 2.0.
 * Provides detailed probe layout of the microarray:
@@ -112,7 +95,7 @@ The **R.utils** package provides various utility functions to facilitate program
 
 ---
 
-### ✅ 7. **IRanges**
+###  7. **IRanges**
 
 * **Purpose**: Efficient manipulation of genomic intervals and ranges.
 * Data structure: `IRanges` object holds start/end positions of genomic features.
@@ -129,7 +112,7 @@ The **R.utils** package provides various utility functions to facilitate program
 
 ---
 
-### ✅ 8. **RColorBrewer**
+###  8. **RColorBrewer**
 
 * **Purpose**: Provides color palettes for data visualization.
 * Features:
