@@ -1,41 +1,32 @@
-#=========================================================
-# ✅ Step 0: Set working directory to raw CEL files folder
-#=========================================================
+
+#  Set working directory to raw CEL files folder
 setwd("e:/Microarray/Cervical_Cancer_data/")
 list.files()
 getwd()
-#==================================
-# ✅ Step 1: Install and load R.utils
-#==================================
-# Install (run only once)
-install.packages("R.utils")
 
-# Load the package
+
+#install.packages("R.utils")
 library(R.utils)
 
-#========================================
-# ✅ Step 2: List all .CEL.gz files
-#========================================
+# list all .CEL.gz files
+
 cel_files <- list.files(pattern = "\\.CEL\\.gz$", full.names = TRUE)
 head(cel_files)
 
-#==================================================
-# ✅ Step 3: Unzip all .CEL.gz files (keep originals)
-#==================================================
+# Unzip all .CEL.gz files (keep originals)
+
 for (file in cel_files) {
   gunzip(file, remove = FALSE)  # Set remove = TRUE to delete .gz after unzipping
 }
 
-#==========================================
-# ✅ Step 4: Verify the extracted .CEL files
-#==========================================
+
+# verify the extracted .CEL files
+
 cel_unzipped <- list.files(pattern = "\\.CEL$", full.names = TRUE)
 length(cel_unzipped)
 head(cel_unzipped)
 
-#====================================================
-# ✅ Step 5: Rename the .CEL files with proper names
-#====================================================
+# Rename the .CEL files with proper names
 
 # Create a new folder for renamed files
 new_folder <- "Cervical_Cancer_data"
@@ -62,9 +53,7 @@ for (old_file in cel_unzipped) {
   file.copy(from = old_file, to = new_file_path)
 }
 
-#===========================================================
-# ✅ Step 6: Set working directory to the renamed files folder
-#===========================================================
+# set working directory to the renamed files folder
 setwd(file.path(getwd(), new_folder))
 list.files()
 
@@ -72,14 +61,14 @@ getwd()
 list.files()
 
 # Install packages
-if (!requireNamespace("BiocManager", quietly = TRUE))
-  install.packages("BiocManager")
+#if (!requireNamespace("BiocManager", quietly = TRUE))
+  #install.packages("BiocManager")
 
-BiocManager::install("affy")
-BiocManager::install("affyPLM")
-BiocManager::install("limma")
-BiocManager::install("hgu133plus2.db")
-BiocManager::install("hgu133plus2cdf")
+#BiocManager::install("affy")
+#BiocManager::install("affyPLM")
+#BiocManager::install("limma")
+#BiocManager::install("hgu133plus2.db")
+#BiocManager::install("hgu133plus2cdf")
 
 
 # Load packages
@@ -101,19 +90,13 @@ targets
 data <- ReadAffy(filenames = targets$FileName)
 data
 
-#=====================#
 # RMA Normalization
-#=====================#
 eset <- rma(data)
 normset <- exprs(eset)
 
 write.csv(normset, "ExpSet_PostNorm.csv", quote = F)
 
-
-#=====================#
 #   Box Plot
-#=====================#
-
 # Set up a 1x2 plotting layout
 par(mfrow = c(1, 2))
 
