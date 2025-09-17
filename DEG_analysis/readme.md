@@ -35,7 +35,7 @@ Here is a **detailed explanation in Markdown format** of how the entire DEGs ana
 
 ---
 
-# **Differentially Expressed Genes (DEGs) Identification Workflow**
+# **Differentially Expressed Genes (DEGs) Identification**
 
 ##  **1. Model Matrix Design**
 
@@ -69,9 +69,11 @@ A **contrast matrix** is defined to specify the comparison of interest:
 
 The contrast matrix is applied to the fitted model, effectively comparing Cervical Cancer vs Normal.
 
-Next, **Empirical Bayes moderation** is applied to improve variance estimates, especially useful for genes with low expression levels.
-This step helps stabilize results and avoid overestimation of significance due to noise.
+Purpose:
+**Empirical Bayes moderation** helps improve the statistical estimation of variances, especially for genes with low expression levels, where variance estimates tend to be unreliable.
 
+* How It Works:
+Instead of relying solely on the sample variance for each gene, the method shrinks the gene-wise variances towards a common (global) value. This stabilizes the variance estimates and improves the accuracy of differential expression testing.
 ---
 
 ##  **5. Extract Top Differentially Expressed Genes**
@@ -79,10 +81,24 @@ This step helps stabilize results and avoid overestimation of significance due t
 The `topTable()` function extracts the top genes based on:
 
 * Log Fold Change (logFC).
-* P-value and adjusted p-value (FDR correction by Benjamini-Hochberg).
+* adjust.method = "BH":
+Applies the Benjamini-Hochberg (BH) method to control the false discovery rate (FDR) when adjusting p-values for multiple testing.
 
-All genes are saved to a CSV file sorted by logFC.
+ The function returns a table with:
 
+* Gene names
+
+* Log fold-change (logFC)
+
+* Average expression (AveExpr)
+
+* Moderated t-statistic (t)
+
+* Raw p-value (P.Value)
+
+* Adjusted p-value (adj.P.Val)
+
+* B-statistic (log-odds
 ---
 
 ##  **6. Filter Significant DEGs**
