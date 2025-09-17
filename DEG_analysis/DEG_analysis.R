@@ -1,15 +1,13 @@
 
-#-----------------------#
+
 # DEG Analysis - Part 2
-#-----------------------#
 # 1. Data Cleaning - Dimensionality Reduction (PCA)
 # 2. Differentially Expressed Genes (DEGs) Identification 
 # 3. DEGs Visualization (Volcano plot & Heatmap)
 
 
-#=====================#
 #   PCA Plot
-#=====================#
+
 install.packages("factoextra")
 library(tidyverse)
 library(factoextra)
@@ -35,7 +33,7 @@ head(pca_res$x)
 
 
 
-# Save PCA plot as high-resolution TIFF
+# Save PCA plot as high-resolution png
 png("pca.png", width = 2000, height = 2000, res = 300)
 
 # Generate PCA plot
@@ -50,9 +48,8 @@ fviz_pca_ind(pca_res,
 )
 dev.off()
 
-#=======================#
+
 # DEGs Identification
-#=======================#
 # Model Matrix Design
 # Let's create a model matrix using the factor() function to represent the condition labels ("Normal" and "Cervical_cancer")
 design <- model.matrix(~factor(c("Normal","Normal","Normal","Normal","Normal","Normal","Normal","Normal","Normal","Normal" , "Cervical_cancer","Cervical_cancer","Cervical_cancer","Cervical_cancer","Cervical_cancer","Cervical_cancer","Cervical_cancer","Cervical_cancer","Cervical_cancer","Cervical_cancer")))
@@ -87,9 +84,9 @@ DEGs <- topTable(fit2, coef=2, adjust="BH", sort.by="logFC", number=100000); #in
 DEGs
 write.csv(DEGs, "Result_Table_logFCsorted.csv", quote = F, row.names = TRUE)
 
-#==================================================#
+
 # Filter & Save final DEGs based on Pvalue & logFC
-#==================================================#
+
 # Read data of topTable
 DEGs <- read.csv("Result_Table_logFCsorted.csv", header = TRUE)
 
@@ -99,9 +96,8 @@ write.csv(final_DEGs,"finalDEGs.csv", quote = F, row.names = F)
 
 
 
-#=============================================#
 # Annotate(getting Gene Symbols) filtered DEGs
-#=============================================#
+
 #BiocManager::install("hgu133plus2.db")
 library("hgu133plus2.db")
 
@@ -121,9 +117,8 @@ write.csv(deg_anno, "DEGs_Annotated.csv", quote = F, row.names = F)
 
 
 
-#================================================#
 # DEG Viz (Volcano plot)
-#================================================#
+
 install.packages("gdata")
 install.packages("gplots")
 library(gdata)
@@ -140,9 +135,9 @@ dev.off()
 
 
 
-#========================#
+
 # Probe/Gene Annotation
-#========================#
+
 BiocManager::install("hgu133plus2.db")
 library("hgu133plus2.db")
 
@@ -174,9 +169,9 @@ write.csv(normset_anno, "ExpSet_PostNorm_Annotated.csv", quote = F, row.names = 
 #now we have got the result, just copy pate the genes and expression values in another sheet and name as heatmap_data
 
 
-#====================================#
+
 # DEG Viz (Heatmap DEG Expression)
-#====================================#
+
 data <- read.csv(file = "Heatmap_data.csv", h=T)
 head(data)
 
@@ -211,3 +206,4 @@ heatmap.2(mat_data,
           lhei = c(1,7)         # Key size width adjustment
 )            
 dev.off()
+
