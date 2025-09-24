@@ -6,116 +6,120 @@
 ![Python](https://img.shields.io/badge/Python-3.8-blue?style=for-the-badge)  
 ![R](https://img.shields.io/badge/R-4.2.2-orange?style=for-the-badge)
 
----
 
-## 💡 **About Cervical Cancer**
+# ML-Powered Cervical Cancer DEG Profiling
 
-Cervical cancer is a **malignant tumor of the cervix**, primarily caused by **persistent infection with high-risk HPV types**.  
-🌍 It ranks as the **4th most common cancer in women worldwide**.
+## About Cervical Cancer
 
-🔬 Early detection via **gene expression profiling** and **biomarker discovery** plays a crucial role in enhancing diagnosis, treatment decisions, and survival rates.
+Cervical cancer is a **malignant tumor of the cervix**, mainly caused by **persistent infection with high-risk HPV types**.
+It ranks as the **4th most common cancer in women worldwide**.
 
----
-
-## 🚀 **Project Goal**
-
-Develop a robust pipeline to analyze **Cervical Cancer gene expression data** and apply **machine learning models** for accurate classification of samples into **Normal vs. Cancer** groups.
+Early detection using **gene expression profiling** and **biomarker discovery** is crucial for improving diagnosis, treatment planning, and survival outcomes.
 
 ---
 
-## ✅ **What’s Inside This Project?**
+## Project Goal
 
-✔️ Data Preprocessing:  
-- RMA normalization  
-- Quality control with boxplots & PCA visualization  
+The aim of this project is to build a **robust and reproducible pipeline** to:
 
-✔️ Differential Expression Analysis:  
-- Identify DEGs using `limma`  
-- Annotate probes to gene symbols  
-
-✔️ Visualization:  
-- Volcano plot  
-- Expression heatmap  
-
-✔️ Machine Learning Models:  
-- k-Nearest Neighbors (kNN)  
-- Support Vector Machine (SVM – Radial Kernel)  
-- Random Forest Classifier  
+* Process and analyze **cervical cancer microarray gene expression data**.
+* Identify **differentially expressed genes (DEGs)** between Normal and Cancer samples.
+* Apply **machine learning models** for accurate sample classification.
 
 ---
 
-## 📂 **Dataset Details**
+## Workflow
 
-| 📁 **Source** | GEO Database |
-|-------------|-------------|
-| 🆔 **Accession ID** | GSE63514 |
-| 🧱 **Platform** | Affymetrix Human Genome U133 Plus 2.0 Array |
-| 👥 **Samples** | 10 Normal + 10 Cervical Cancer |
+### 1. Data Preprocessing
 
-🔗 [Explore the Dataset on GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63514)
+* Imported microarray datasets (GSE63514 from GEO).
+* Applied **RMA (Robust Multi-array Average) normalization**.
+* Performed quality control using boxplots and PCA plots.
 
----
+### 2. Differential Gene Expression Analysis
 
-## 🧱 **Workflow Summary**
+* Conducted DEG analysis using **limma**.
+* Annotated probes to gene symbols.
+* Filtered DEGs based on **logFC** and **adjusted p-value** thresholds.
 
-### 1️⃣ Data Loading & Normalization  
-- Load `.CEL` files via `ReadAffy`  
-- Perform **RMA normalization**  
-- Export processed expression data:  
-  ➡️ `ExpSet_PostNorm.csv`
+### 3. Visualization
 
-### 2️⃣ Exploratory Data Analysis (EDA)  
-- 📊 Boxplots: Expression distribution before & after normalization  
-- 🎯 PCA plots: Visual group separation (Normal vs. Cancer)
+* **Volcano plots** for significant DEGs.
+* **Heatmaps** of top-ranked genes.
+* **PCA plots** showing group separation.
 
-### 3️⃣ DEG Analysis  
-- Linear modeling with `limma`  
-- Define contrast: **Cervical Cancer – Normal**  
-- Filter DEGs by `logFC` & adjusted p-value  
-- Export results:  
-    - `Result_Table_logFCsorted.csv`  
-    - `finalDEGs.csv`  
-- Annotate using `hgu133plus2.db`
+### 4. Machine Learning Pipeline
 
-### 4️⃣ Heatmap Visualization  
-- Select highly significant DEGs (|logFC| ≥ 2.5)  
-- Plot heatmap: Expression patterns across samples
+* Models implemented:
 
-### 5️⃣ Machine Learning Pipeline  
-- Prepare labeled dataset  
-- Train/test split (60%/40%)  
-- Apply models:  
-    - 🧱 **kNN**  
-    - ⚛️ **SVM (Radial Kernel)**  
-    - 🌳 **Random Forest**  
-- Evaluate:  
-    - 📈 Accuracy  
-    - ✅ Confusion Matrix  
-    - ⭐ Feature Importance
+  * k-Nearest Neighbors (kNN)
+  * Support Vector Machine (SVM – Radial Kernel)
+  * Random Forest Classifier
+  * Logistic Regression
+  * Decision Tree
+
+* Steps performed:
+
+  * Train/test split.
+  * Model evaluation using accuracy, sensitivity, specificity.
+  * Confusion matrix analysis.
+  * Feature importance ranking.
+  * Learning curve visualization.
 
 ---
 
-## 📜 **License**
+## Dataset Details
+
+| Source       | GEO Database                                |
+| ------------ | ------------------------------------------- |
+| Accession ID | **GSE63514**                                |
+| Platform     | Affymetrix Human Genome U133 Plus 2.0 Array |
+| Samples      | 10 Normal + 10 Cervical Cancer              |
+
+🔗 [View Dataset on GEO](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE63514)
+
+---
+
+## Key Outcomes
+
+* Identified **differentially expressed genes** relevant to cervical cancer.
+* Built ML models achieving **high classification accuracy**.
+* Highlighted **predictive biomarkers** for potential clinical relevance.
+* Established a **reusable workflow** for microarray gene expression analysis.
+
+---
+
+## Future Directions
+
+* Extend workflow to **RNA-Seq datasets**.
+* Perform **pathway enrichment analysis** on DEGs.
+* Explore **deep learning approaches** for improved classification.
+
+---
+
+✨ This repository demonstrates how **integrating genomics with machine learning** can help uncover biomarkers and build predictive models for cervical cancer research.
+
+##  **License**
 
 This project is licensed under the **MIT License** — Feel free to use and modify!  
-🔓 Open-source & community-driven.
+ Open-source & community-driven.
 
 ---
 
-## 🤝 **Contribute**
+##  **Contribute**
 
-We ❤️ community contributions!  
+We  community contributions!  
 Follow these simple steps:  
-1. 🍴 Fork the repository  
-2. 🌿 Create a feature branch  
-3. 🚀 Open a pull request
+1.  Fork the repository  
+2.  Create a feature branch  
+3.  Open a pull request
 
 ---
 
-## 👨‍💻 **About Me**
+##  **About Me**
 
 **Vibhanshu Singh**  
-🔧 Developer & Maintainer of **MetaOmics-ML**  
+ Developer & Maintainer of **ML-Powered_Cervical_Cancer_DEG_Profiling**  
 
 📧 [vibhanshusingh78@gmail.com](mailto:vibhanshusingh78@gmail.com)  
 🌐 [GitHub: Vibhanshusingh-001](https://github.com/Vibhanshusingh-001)
