@@ -2,29 +2,35 @@
 
 # Affymetrix `.CEL` File Format
 
-A **CEL file** is the raw data output from **Affymetrix GeneChip microarrays**.  
-It contains **probe-level intensity measurements** along with metadata about the chip and scanning process.  
+A **CEL file** is the raw data output from **Affymetrix GeneChip microarrays**.
+It contains **probe-level intensity measurements** along with metadata about the chip and scanning process.
 These files are crucial for **preprocessing, normalization, and quality control** in microarray analysis.
 
 
 
 ## 1. Versions of CEL Format
-- **CEL v3 (ASCII / Text-based)**
-  - Human-readable format  
-  - Data stored as plain text sections
-- **CEL v4 (Binary)**
-  - Compact and efficient  
-  - Not human-readable (appears as random symbols in a text editor)  
-  - Standard format in most modern datasets (e.g., GEO CEL files)
+
+* **CEL v3 (ASCII / Text-based)**
+
+  * Human-readable format
+  * Data stored as plain text sections
+
+* **CEL v4 (Binary)**
+
+  * Compact and efficient
+  * Not human-readable (appears as random symbols in a text editor)
+  * Standard format in most modern datasets (e.g., GEO CEL files)
 
 ---
 
 ## 2. Structure of CEL Files
 
-### 🔹 (A) Header Section
+### (A) Header Section
+
 Contains metadata about the array layout, grid geometry, and analysis parameters.
 
 **Example (ASCII v3):**
+
 ```plaintext
 [CEL]
 Version=3
@@ -38,11 +44,11 @@ GridCornerLR=8406 8426
 GridCornerLL=213 8411
 Algorithm=Percentile
 AlgorithmParameters=Percentile:75;CellMargin:2;OutlierHigh:1.500;OutlierLow:1.004
-````
+```
 
 ---
 
-### 🔹 (B) Intensity Section
+### (B) Intensity Section
 
 Contains raw probe intensity values with associated statistics.
 
@@ -67,7 +73,7 @@ In **Binary CEL v4**, these values are stored in binary blocks (not human-readab
 
 ---
 
-### 🔹 (C) Masks Section *(optional)*
+### (C) Masks Section
 
 Lists probes excluded due to physical defects.
 
@@ -76,19 +82,6 @@ Lists probes excluded due to physical defects.
 CellHeader=X Y
 45  103
 46  103
-```
-
----
-
-### 🔹 (D) Outliers Section *(optional)*
-
-Lists probes flagged as statistical outliers.
-
-```plaintext
-[OUTLIERS]
-CellHeader=X Y
-100  200
-101  200
 ```
 
 ---
@@ -137,45 +130,25 @@ CellHeader=X Y
 | ...                               |                                  |
 | \`\`\`                            | \`\`\`                           |
 
-✅ **Takeaway:**
-
-* **ASCII v3** → Great for learning and manual inspection.
-* **Binary v4** → Compact and efficient for large-scale datasets.
-
 ---
 
-## 5. Reading CEL Files Programmatically
+## 5. Reading CEL Files 
 
-### 🔹 In **R (Bioconductor)**
+### In **R (Bioconductor)**
 
 ```r
 library(affy)   # or 'oligo'
-data <- ReadAffy(filenames="sample.CEL")
+data <- ReadAffy(filenames = "sample.CEL")
 exprs(data)     # Extract intensity matrix
 ```
 
-### 🔹 In **Python (Biopython)**
+### In **Python (Biopython)**
 
 ```python
 from Bio.Affy import CelFile
+
 with open("sample.CEL") as handle:
     c = CelFile.read(handle)
     print(c.ncols, c.nrows)   # Array dimensions
 ```
 
----
-
-## ✅ Summary
-
-* **CEL files** store probe-level raw intensities and array metadata.
-* **ASCII v3** → Human-readable format with sections: `[CEL]`, `[INTENSITY]`, `[MASKS]`, `[OUTLIERS]`.
-* **Binary v4** → Compact, efficient, but requires software to decode.
-* Easily processed with **R (affy/oligo)** or **Python (Biopython)**.
-* Fundamental for **normalization, QC, and downstream gene expression analysis**.
-
----
-
-```
-
-Would you like me to also make a **visual diagram/flowchart** (e.g., showing how raw probe data flows from `.CEL` → normalization → expression matrix) to include in this markdown?
-```
