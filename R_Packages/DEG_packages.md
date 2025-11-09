@@ -75,7 +75,6 @@
   * Enhanced scatter plots.
   * Bar plots with additional features.
   * Plotting multiple datasets.
-
 *  Example Functions:
 
   * `heatmap.2()` → Creates a heatmap with many extra options (color keys, dendrograms, scaling, etc.).
