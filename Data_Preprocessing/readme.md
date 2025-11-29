@@ -50,7 +50,6 @@ normalized_data <- rma(data)
 # Get the clean gene expression matrix
 expr_matrix <- exprs(normalized_data)
 ```
-
 ---
 
 # Comparison of Boxplots: Pre-Normalization vs Post-Normalization
