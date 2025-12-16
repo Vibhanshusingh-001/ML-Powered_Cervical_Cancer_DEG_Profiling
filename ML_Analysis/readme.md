@@ -7,26 +7,26 @@
 
 This step loads all R packages required for data handling, preprocessing, analysis, and visualization.
 
----
+
 
 ## Step 2: Set Up Your Workspace
 
 Prepare the working environment (e.g., set working directory, clear workspace, set seed if needed).
 
----
+
 
 ## Step 3: Load the Data
 
 Import the raw dataset into R for further preprocessing and analysis.
 
----
+
 
 ## Step 4: Clean and Explore the Data (Preprocessing & EDA)
 
 This block performs **data cleaning, transformation, and exploratory data analysis (EDA)**.  
 EDA (Exploratory Data Analysis) involves inspecting the data to identify inconsistencies, missing values, and structural issues before modeling.
 
----
+
 
 ### 4.1 Check Basic Data Structure
 
@@ -35,7 +35,7 @@ str(df)  # Displays data types (numeric, character, factor, etc.)
 dim(df)  # Shows dimensions: rows × columns (e.g., genes × samples)
 ````
 
----
+
 
 ### 4.2 Remove Missing Values
 
@@ -45,10 +45,6 @@ head(df)
 dim(df)  # Re-check dimensions after cleaning
 ```
 
-**Why?**
-Missing values can distort statistical analysis and machine learning models.
-
----
 
 ### 4.3 Average Duplicate Genes (If Present)
 
@@ -77,9 +73,9 @@ dim(x)
 * Microarray datasets often contain multiple probes per gene
 * Averaging ensures **one row per gene**
 
-> **Note:** After this step, gene names become row names instead of a column.
+ **Note:** After this step, gene names become row names instead of a column.
 
----
+
 
 ### 4.4 Convert Row Names to a Column
 
@@ -96,7 +92,7 @@ df <- x  # Update the main dataset
 **Purpose:**
 Makes gene identifiers explicit by converting row names into a visible column (`Symbols`).
 
----
+
 
 ### 4.5 Transpose the Dataset (Genes → Columns, Samples → Rows)
 
@@ -128,7 +124,7 @@ df_t[1]
 
 Saving and reloading helps avoid formatting inconsistencies after transposition.
 
----
+
 
 ### 4.6 Clean Sample Labels
 
@@ -150,7 +146,7 @@ df_t[1]
 
 This simplifies downstream classification tasks (e.g., Normal vs Cancer).
 
----
+
 
 ### 4.7 Convert Class Labels to Factors
 
@@ -166,7 +162,7 @@ df <- df_t  # Final cleaned dataset
 * Factors are required for classification models in R
 * Ensures R treats labels as categorical, not text
 
----
+
 
 ### 4.8 Final Inspection
 
@@ -176,7 +172,7 @@ df <- data.frame(df)
 head(df)
 ```
 
----
+
 
 ### Exploratory Plots
 
@@ -232,7 +228,7 @@ library(tibble)
 
 Even though you train **kNN here**, these libraries allow **multiple models** in the same script.
 
----
+
 
 ## Cross-Validation Setup
 
@@ -247,28 +243,7 @@ metric <- "Accuracy"
 * `method = "cv"` → **k-fold cross-validation**
 * `number = 8` → data split into **8 folds**
 
-**Why cross-validation?**
 
-* Reduces overfitting
-* Gives more reliable performance estimates
-
----
-
-## Inspecting the Dataset
-
-```r
-head(df_t)
-```
-
-Displays the **first 6 rows** of `df_t` to:
-
-* Check column names
-* Verify data types
-* Ensure response variable exists
-
-*(Likely `Symbols` is your class label)*
-
----
 
 ## Storage for Model Results
 
@@ -283,7 +258,6 @@ Creates an **empty list** to store accuracy values for:
 * SVM
 * XGBoost (later)
 
----
 
 ## Function to Plot & Save Confusion Matrix
 
@@ -297,7 +271,7 @@ This function:
 * Produces a **publication-quality heatmap**
 * Saves it as a PNG file
 
----
+
 
 ## Function to Plot Learning Curve
 
@@ -314,7 +288,7 @@ This function:
   * Underfitting
   * Overfitting
 
----
+
 
 ## k-Nearest Neighbors Model (Model 1)
 
@@ -324,9 +298,9 @@ This function:
 set.seed(7)
 ```
 
-Ensures **reproducibility**.
 
----
+
+
 
 ### Train kNN Model
 
@@ -344,7 +318,7 @@ fit.knn <- train(
   <img src="https://github.com/user-attachments/assets/e1172a9c-4323-40ed-b9f1-1fe9b17d48bb" width="650" />
 </p>
 
----
+
 
 ### Feature Importance
 
@@ -352,13 +326,13 @@ fit.knn <- train(
 varImp(fit.knn)
 ```
 
----
+
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/e05af6f3-a30a-46c2-b81f-24dbcec06937" width="650" />
 </p>
 
----
+
 
 ## Model Evaluation
 
@@ -370,7 +344,7 @@ cm_knn <- confusionMatrix(pred.knn, test$Symbols, positive = "Cancer")
   <img src="https://github.com/user-attachments/assets/4506f1ff-a22e-4eba-8909-1511fcd2fde7" width="600" />
 </p>
 
----
+
 
 ## Evaluation Outputs
 
@@ -380,7 +354,7 @@ cm_knn <- confusionMatrix(pred.knn, test$Symbols, positive = "Cancer")
   <img src="https://github.com/user-attachments/assets/db5d61f2-8a3d-4488-a809-8cb0f1ab4450" width="700" />
 </p>
 
----
+
 
 ### Learning Curve
 
@@ -388,9 +362,6 @@ cm_knn <- confusionMatrix(pred.knn, test$Symbols, positive = "Cancer")
   <img src="https://github.com/user-attachments/assets/06bd2310-a4a3-4363-b7e2-de6d69059df8" width="650" />
 </p>
 ```
-
-
-# Machine Learning Models: Training, Evaluation, and Comparison
 
 
 
@@ -408,16 +379,19 @@ fit.svm <- train(
   trControl = control
 )
 fit.svm
-````
-<img width="826" height="422" alt="fit_svm" src="https://github.com/user-attachments/assets/2230a39e-2062-4fb3-9204-1ec35dfc90af" />
+```
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2230a39e-2062-4fb3-9204-1ec35dfc90af" width="600"/>
+</p>
 
 ### Explanation
 
-* `set.seed(101)` ensures reproducibility
-* `svmRadial` uses a **Radial Basis Function (RBF) kernel**
-* SVM finds an **optimal separating hyperplane** in a high-dimensional space
-* The radial kernel allows **non-linear decision boundaries**
-* Hyperparameters (`C`, `sigma`) are tuned automatically by `caret`
+- `set.seed(101)` ensures reproducibility  
+- `svmRadial` uses a **Radial Basis Function (RBF) kernel**  
+- SVM finds an **optimal separating hyperplane** in high-dimensional space  
+- The radial kernel enables **non-linear decision boundaries**  
+- Hyperparameters (`C`, `sigma`) are tuned automatically by `caret`
 
 ---
 
@@ -427,17 +401,18 @@ fit.svm
 varImp(fit.svm)
 ```
 
-* Measures how much each feature contributes to classification
-* For SVM, importance is estimated indirectly via model sensitivity
+- Measures each feature’s contribution to classification  
+- For SVM, importance is estimated indirectly via model sensitivity  
 
 ```r
 plot(varImp(fit.svm), top = 30)
 ```
 
-###  Feature Importance Plot (SVM)
+### Feature Importance Plot (SVM)
 
-> <img width="800" height="600" alt="feature_importance_svm" src="https://github.com/user-attachments/assets/0ee2234b-8690-4eed-8cdf-9a4048ea31c7" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/0ee2234b-8690-4eed-8cdf-9a4048ea31c7" width="600"/>
+</p>
 
 ---
 
@@ -447,8 +422,8 @@ plot(varImp(fit.svm), top = 30)
 pred.svm <- predict(fit.svm, newdata = test)
 ```
 
-* Applies the trained SVM model to unseen test data
-* Outputs predicted class labels
+- Applies trained SVM to unseen test data  
+- Outputs predicted class labels  
 
 ---
 
@@ -458,15 +433,18 @@ pred.svm <- predict(fit.svm, newdata = test)
 cm_svm <- confusionMatrix(pred.svm, test$Symbols, positive = "Cancer")
 print(cm_svm)
 ```
-<img width="655" height="547" alt="Evaluation_SVM" src="https://github.com/user-attachments/assets/b946d177-e2f4-45c0-aea2-0a84e04540ae" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b946d177-e2f4-45c0-aea2-0a84e04540ae" width="500"/>
+</p>
 
 ### Metrics Computed
 
-* Accuracy
-* Sensitivity (Recall)
-* Specificity
-* Precision
-* F1-score
+- Accuracy  
+- Sensitivity (Recall)  
+- Specificity  
+- Precision  
+- F1-score  
 
 ```r
 model_accuracies$svm <- cm_svm$overall["Accuracy"]
@@ -476,14 +454,17 @@ model_accuracies$svm <- cm_svm$overall["Accuracy"]
 
 ## Confusion Matrix (SVM)
 
-> <img width="1800" height="1200" alt="confusion_matrix_svm" src="https://github.com/user-attachments/assets/0cfe4d37-06bf-40a2-85d6-05ce35c92d40" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/0cfe4d37-06bf-40a2-85d6-05ce35c92d40" width="600"/>
+</p>
 
 ---
 
 ## Learning Curve (SVM)
 
-> <img width="800" height="600" alt="learning_curve_svm" src="https://github.com/user-attachments/assets/7800aee0-8f3e-44d8-a9c8-cad37594d9c2" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/7800aee0-8f3e-44d8-a9c8-cad37594d9c2" width="600"/>
+</p>
 
 ---
 
@@ -502,14 +483,17 @@ fit.rf <- train(
 )
 fit.rf
 ```
-<img width="767" height="392" alt="Fit_RF" src="https://github.com/user-attachments/assets/5a4f814b-f7ed-4543-bc25-8d0afe8b74cc" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/5a4f814b-f7ed-4543-bc25-8d0afe8b74cc" width="600"/>
+</p>
 
 ### Explanation
 
-* Random Forest is an **ensemble of decision trees**
-* Each tree is trained on a bootstrap sample
-* Feature randomness reduces overfitting
-* Final prediction is based on **majority voting**
+- Random Forest is an **ensemble of decision trees**  
+- Each tree is trained on a bootstrap sample  
+- Feature randomness reduces overfitting  
+- Final prediction uses **majority voting**
 
 ---
 
@@ -517,21 +501,12 @@ fit.rf
 
 ```r
 varImp(fit.rf)
-```
-
-* RF computes importance using:
-
-  * Mean Decrease in Accuracy
-  * Mean Decrease in Gini
-
-```r
 plot(varImp(fit.rf), top = 30)
 ```
 
-###  Feature Importance Plot (RF)
-
-> <img width="800" height="600" alt="feature_importance_rf" src="https://github.com/user-attachments/assets/ce618fc7-dd8f-4331-a6de-ddefc2e29c7b" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/ce618fc7-dd8f-4331-a6de-ddefc2e29c7b" width="600"/>
+</p>
 
 ---
 
@@ -542,21 +517,26 @@ pred.rf <- predict(fit.rf, newdata = test)
 cm_rf <- confusionMatrix(pred.rf, test$Symbols, positive = "Cancer")
 model_accuracies$rf <- cm_rf$overall["Accuracy"]
 ```
-<img width="557" height="561" alt="Evaluation_rf" src="https://github.com/user-attachments/assets/41f58aca-117d-4e17-a8ba-49ac49174bff" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/41f58aca-117d-4e17-a8ba-49ac49174bff" width="500"/>
+</p>
 
 ---
 
 ## Confusion Matrix (RF)
 
-> <img width="1800" height="1200" alt="confusion_matrix_rf" src="https://github.com/user-attachments/assets/59504fc1-dbc0-47ae-a9e1-1e9e45d3daab" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/59504fc1-dbc0-47ae-a9e1-1e9e45d3daab" width="600"/>
+</p>
 
 ---
 
 ## Learning Curve (RF)
 
-> <img width="800" height="600" alt="learning_curve_rf" src="https://github.com/user-attachments/assets/125345c6-665c-4876-9dc4-aa953775b773" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/125345c6-665c-4876-9dc4-aa953775b773" width="600"/>
+</p>
 
 ---
 
@@ -576,15 +556,21 @@ fit.lr <- train(
 )
 fit.lr
 ```
-<img width="557" height="312" alt="fit_lr" src="https://github.com/user-attachments/assets/cb4d5993-4149-477d-ac91-b30229f8adcd" />
-<img width="415" height="256" alt="results_lr" src="https://github.com/user-attachments/assets/911befea-389f-4576-a749-6c88c97a0a46" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/cb4d5993-4149-477d-ac91-b30229f8adcd" width="500"/>
+</p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/911befea-389f-4576-a749-6c88c97a0a46" width="500"/>
+</p>
 
 ### Explanation
 
-* Logistic regression models **probability of class membership**
-* Uses a **logit (sigmoid) function**
-* Coefficients represent log-odds contribution of each feature
-* Suitable as a **baseline interpretable model**
+- Models **probability of class membership**  
+- Uses **logit (sigmoid) function**  
+- Coefficients represent log-odds contribution  
+- Serves as a **baseline interpretable model**
 
 ---
 
@@ -595,10 +581,9 @@ varImp(fit.lr)
 plot(varImp(fit.lr), top = 10)
 ```
 
-### 📌 Feature Importance Plot (LR)
-
-> <img width="800" height="600" alt="feature_importance_lr" src="https://github.com/user-attachments/assets/e4bd6497-428a-49d7-bf9e-b33ca511d2c3" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e4bd6497-428a-49d7-bf9e-b33ca511d2c3" width="600"/>
+</p>
 
 ---
 
@@ -609,31 +594,18 @@ pred.lr <- predict(fit.lr, newdata = test)
 cm_lr <- confusionMatrix(pred.lr, test$Symbols, positive = "Cancer")
 model_accuracies$lr <- cm_lr$overall["Accuracy"]
 ```
-<img width="602" height="558" alt="Evaluation_LR" src="https://github.com/user-attachments/assets/0a9e79db-524f-4eab-951b-cc0520fcae37" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/0a9e79db-524f-4eab-951b-cc0520fcae37" width="500"/>
+</p>
 
 ---
 
 ## Confusion Matrix (LR)
 
-> <img width="1800" height="1200" alt="confusion_matrix_lr" src="https://github.com/user-attachments/assets/6ae55376-6d8e-4573-a480-3026b5ed8194" />
-
-
----
-
-## Custom Learning Curve (Logistic Regression)
-
-### Purpose
-
-* `caret` does not provide learning curves for `glm`
-* Custom function evaluates performance across increasing training sizes
-
-```r
-results_lr <- custom_learning_curve(train, test, Symbols ~ .)
-```
-
-###  Learning Curve Plot (LR)
-
-> *(Paste learning curve image here)*
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/6ae55376-6d8e-4573-a480-3026b5ed8194" width="600"/>
+</p>
 
 ---
 
@@ -654,13 +626,16 @@ fit.dt <- train(
 )
 fit.dt
 ```
-<img width="852" height="727" alt="fit_DT" src="https://github.com/user-attachments/assets/9433b08c-b0d1-4d92-bb6b-614a16faed90" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/9433b08c-b0d1-4d92-bb6b-614a16faed90" width="600"/>
+</p>
 
 ### Explanation
 
-* Decision trees split data using **if–else rules**
-* `cp` controls tree complexity (pruning)
-* Lower `minsplit` allows deeper trees
+- Decision Trees use **if–else splitting rules**
+- `cp` controls **tree pruning**
+- Lower `minsplit` enables deeper trees
 
 ---
 
@@ -671,10 +646,9 @@ varImp(fit.dt)
 plot(varImp(fit.dt), top = 30)
 ```
 
-### 📌 Feature Importance Plot (DT)
-
-> <img width="800" height="600" alt="feature_importance_DT" src="https://github.com/user-attachments/assets/0cf21dbe-efc6-47ca-a2ce-85829206df43" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/0cf21dbe-efc6-47ca-a2ce-85829206df43" width="600"/>
+</p>
 
 ---
 
@@ -685,21 +659,26 @@ pred.dt <- predict(fit.dt, newdata = test)
 cm_dt <- confusionMatrix(pred.dt, test$Symbols, positive = "Cancer")
 model_accuracies$dt <- cm_dt$overall["Accuracy"]
 ```
-<img width="541" height="548" alt="Evaluation_dt" src="https://github.com/user-attachments/assets/b69dea08-0372-4ced-8c2d-b919a2334bd1" />
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b69dea08-0372-4ced-8c2d-b919a2334bd1" width="500"/>
+</p>
 
 ---
 
 ## Confusion Matrix (DT)
 
-> <img width="1800" height="1200" alt="confusion_matrix_dt" src="https://github.com/user-attachments/assets/42d65a9d-c4dc-4f27-8eec-6e91c2f21f54" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/42d65a9d-c4dc-4f27-8eec-6e91c2f21f54" width="600"/>
+</p>
 
 ---
 
 ## Learning Curve (DT)
 
-> <img width="800" height="600" alt="learning_curve_dt" src="https://github.com/user-attachments/assets/def82392-f7d8-483f-89c0-b403ca7924bb" />
-
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/def82392-f7d8-483f-89c0-b403ca7924bb" width="600"/>
+</p>
 
 ---
 
@@ -718,16 +697,21 @@ fit.xgb <- train(
 )
 fit.xgb
 ```
+
 <p align="center">
-<img width="50" height="500" alt="fit_xgb" src="https://github.com/user-attachments/assets/ac3d76b1-b031-4eed-89c0-9dc8d5b19fc1" />
-<img width="500" height="500" alt="XGB_fit" src="https://github.com/user-attachments/assets/b2dc2654-f602-46ca-a508-e7adf474d18c" />
+  <img src="https://github.com/user-attachments/assets/ac3d76b1-b031-4eed-89c0-9dc8d5b19fc1" width="600"/>
 </p>
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/b2dc2654-f602-46ca-a508-e7adf474d18c" width="600"/>
+</p>
+
 ### Explanation
 
-* XGBoost is a **gradient boosting algorithm**
-* Sequentially corrects errors of previous trees
-* Strong performance on high-dimensional omics data
-* Includes regularization to prevent overfitting
+- XGBoost is a **gradient boosting algorithm**
+- Sequentially corrects errors of previous trees
+- Handles **high-dimensional omics data**
+- Includes regularization to reduce overfitting
 
 ---
 
@@ -738,9 +722,8 @@ varImp(fit.xgb)
 plot(varImp(fit.xgb), top = 30)
 ```
 
-###  Feature Importance Plot (XGB)
 <p align="center">
-> <img width="300" height="200" alt="feature_importance_XGB" src="https://github.com/user-attachments/assets/4f299fbc-5742-460d-a7a2-91b4bb12bbe5" />
+  <img src="https://github.com/user-attachments/assets/4f299fbc-5742-460d-a7a2-91b4bb12bbe5" width="500"/>
 </p>
 
 ---
@@ -752,24 +735,26 @@ pred.xgb <- predict(fit.xgb, newdata = test)
 cm_xgb <- confusionMatrix(pred.xgb, test$Symbols, positive = "Cancer")
 model_accuracies$xgb <- cm_xgb$overall["Accuracy"]
 ```
-<p align="center">
-<img width="587" height="547" alt="Evaluation_xgb" src="https://github.com/user-attachments/assets/048a0787-ef58-48df-8e4c-a4641682ae48" />
-</p>
----
 
-## Confusion Matrix (XGB)
 <p align="center">
-> <img width="500" height="700" alt="confusion_matrix_xgb" src="https://github.com/user-attachments/assets/440d8ae3-95dc-4a1a-834d-024ad0ca191b" />
+  <img src="https://github.com/user-attachments/assets/048a0787-ef58-48df-8e4c-a4641682ae48" width="500"/>
 </p>
 
 ---
 
-## Learning Curve (XGB)
+## Confusion Matrix (XGBoost)
+
 <p align="center">
-> <img width="500" height="700" alt="learning_curve_xgb" src="https://github.com/user-attachments/assets/e10a1a73-33a9-4012-900c-021907e08349" />
+  <img src="https://github.com/user-attachments/assets/440d8ae3-95dc-4a1a-834d-024ad0ca191b" width="600"/>
 </p>
 
 ---
+
+## Learning Curve (XGBoost)
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/e10a1a73-33a9-4012-900c-021907e08349" width="600"/>
+</p>
 
 # Model Comparison
 
@@ -787,24 +772,7 @@ print(acc_df)
 
 ## Model Accuracy Comparison Plot
 
-```r
-ggsave(
-  "model_accuracy_comparison.png", 
-  plot = p, 
-  width = 8, 
-  height = 6, 
-  dpi = 300
-)
-```
-
-###  Accuracy Comparison Bar Plot
-
-
-
 <p align="center">
-  <img width="700" height="500" alt="model_accuracy_comparison" src="https://github.com/user-attachments/assets/296a73b9-156b-4527-a1b5-c6afb9f73378" />
+  <img src="https://github.com/user-attachments/assets/296a73b9-156b-4527-a1b5-c6afb9f73378" width="600"/>
 </p>
-
----
-
 
