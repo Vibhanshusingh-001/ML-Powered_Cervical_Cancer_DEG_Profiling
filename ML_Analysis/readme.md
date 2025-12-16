@@ -420,7 +420,7 @@ fit.svm
 - The radial kernel enables **non-linear decision boundaries**  
 - Hyperparameters (`C`, `sigma`) are tuned automatically by `caret`
 
----
+
 
 ## Feature Importance (SVM)
 
@@ -441,7 +441,7 @@ plot(varImp(fit.svm), top = 30)
   <img src="https://github.com/user-attachments/assets/0ee2234b-8690-4eed-8cdf-9a4048ea31c7" width="600"/>
 </p>
 
----
+
 
 ## Model Prediction
 
@@ -452,7 +452,6 @@ pred.svm <- predict(fit.svm, newdata = test)
 - Applies trained SVM to unseen test data  
 - Outputs predicted class labels  
 
----
 
 ## Model Evaluation
 
@@ -477,7 +476,7 @@ print(cm_svm)
 model_accuracies$svm <- cm_svm$overall["Accuracy"]
 ```
 
----
+
 
 ## Confusion Matrix (SVM)
 
@@ -485,7 +484,6 @@ model_accuracies$svm <- cm_svm$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/0cfe4d37-06bf-40a2-85d6-05ce35c92d40" width="600"/>
 </p>
 
----
 
 ## Learning Curve (SVM)
 
@@ -493,7 +491,7 @@ model_accuracies$svm <- cm_svm$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/7800aee0-8f3e-44d8-a9c8-cad37594d9c2" width="600"/>
 </p>
 
----
+
 
 # Model 3: Random Forest
 
@@ -522,7 +520,7 @@ fit.rf
 - Feature randomness reduces overfitting  
 - Final prediction uses **majority voting**
 
----
+
 
 ## Feature Importance (Random Forest)
 
@@ -535,7 +533,7 @@ plot(varImp(fit.rf), top = 30)
   <img src="https://github.com/user-attachments/assets/ce618fc7-dd8f-4331-a6de-ddefc2e29c7b" width="600"/>
 </p>
 
----
+
 
 ## Prediction and Evaluation
 
@@ -549,7 +547,7 @@ model_accuracies$rf <- cm_rf$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/41f58aca-117d-4e17-a8ba-49ac49174bff" width="500"/>
 </p>
 
----
+
 
 ## Confusion Matrix (RF)
 
@@ -557,7 +555,7 @@ model_accuracies$rf <- cm_rf$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/59504fc1-dbc0-47ae-a9e1-1e9e45d3daab" width="600"/>
 </p>
 
----
+
 
 ## Learning Curve (RF)
 
@@ -565,7 +563,7 @@ model_accuracies$rf <- cm_rf$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/125345c6-665c-4876-9dc4-aa953775b773" width="600"/>
 </p>
 
----
+
 
 # Model 4: Logistic Regression
 
@@ -599,7 +597,7 @@ fit.lr
 - Coefficients represent log-odds contribution  
 - Serves as a **baseline interpretable model**
 
----
+
 
 ## Feature Importance (Logistic Regression)
 
@@ -612,7 +610,7 @@ plot(varImp(fit.lr), top = 10)
   <img src="https://github.com/user-attachments/assets/e4bd6497-428a-49d7-bf9e-b33ca511d2c3" width="600"/>
 </p>
 
----
+
 
 ## Prediction and Evaluation
 
@@ -626,7 +624,6 @@ model_accuracies$lr <- cm_lr$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/0a9e79db-524f-4eab-951b-cc0520fcae37" width="500"/>
 </p>
 
----
 
 ## Confusion Matrix (LR)
 
@@ -634,7 +631,7 @@ model_accuracies$lr <- cm_lr$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/6ae55376-6d8e-4573-a480-3026b5ed8194" width="600"/>
 </p>
 
----
+
 
 # Model 5: Decision Tree
 
@@ -664,7 +661,7 @@ fit.dt
 - `cp` controls **tree pruning**
 - Lower `minsplit` enables deeper trees
 
----
+
 
 ## Feature Importance (Decision Tree)
 
@@ -677,7 +674,7 @@ plot(varImp(fit.dt), top = 30)
   <img src="https://github.com/user-attachments/assets/0cf21dbe-efc6-47ca-a2ce-85829206df43" width="600"/>
 </p>
 
----
+
 
 ## Prediction and Evaluation
 
@@ -691,7 +688,7 @@ model_accuracies$dt <- cm_dt$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/b69dea08-0372-4ced-8c2d-b919a2334bd1" width="500"/>
 </p>
 
----
+
 
 ## Confusion Matrix (DT)
 
@@ -699,7 +696,7 @@ model_accuracies$dt <- cm_dt$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/42d65a9d-c4dc-4f27-8eec-6e91c2f21f54" width="600"/>
 </p>
 
----
+
 
 ## Learning Curve (DT)
 
@@ -707,7 +704,7 @@ model_accuracies$dt <- cm_dt$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/def82392-f7d8-483f-89c0-b403ca7924bb" width="600"/>
 </p>
 
----
+
 
 # Model 6: XGBoost
 
@@ -740,7 +737,6 @@ fit.xgb
 - Handles **high-dimensional omics data**
 - Includes regularization to reduce overfitting
 
----
 
 ## Feature Importance (XGBoost)
 
@@ -753,7 +749,7 @@ plot(varImp(fit.xgb), top = 30)
   <img src="https://github.com/user-attachments/assets/4f299fbc-5742-460d-a7a2-91b4bb12bbe5" width="500"/>
 </p>
 
----
+
 
 ## Prediction and Evaluation
 
@@ -767,7 +763,7 @@ model_accuracies$xgb <- cm_xgb$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/048a0787-ef58-48df-8e4c-a4641682ae48" width="500"/>
 </p>
 
----
+
 
 ## Confusion Matrix (XGBoost)
 
@@ -775,7 +771,6 @@ model_accuracies$xgb <- cm_xgb$overall["Accuracy"]
   <img src="https://github.com/user-attachments/assets/440d8ae3-95dc-4a1a-834d-024ad0ca191b" width="600"/>
 </p>
 
----
 
 ## Learning Curve (XGBoost)
 
@@ -795,11 +790,11 @@ acc_df <- data.frame(
 print(acc_df)
 ```
 
----
+
 
 ## Model Accuracy Comparison Plot
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/296a73b9-156b-4527-a1b5-c6afb9f73378" width="600"/>
+  <img src="https://github.com/user-attachments/assets/296a73b9-156b-4527-a1b5-c6afb9f73378" width="800"/>
 </p>
 
