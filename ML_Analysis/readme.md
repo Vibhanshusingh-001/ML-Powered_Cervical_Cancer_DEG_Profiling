@@ -263,6 +263,26 @@ Creates an **empty list** to store accuracy values for:
 
 ```r
 plot_save_cm <- function(cm_table, model_name) {
+  library(ggplot2)
+  library(dplyr)
+  table <- data.frame(cm_table)
+  plotTable <- table %>%
+    mutate(goodbad = ifelse(table$Prediction == table$Reference, "high", "low")) %>%
+    group_by(Reference) %>%
+    mutate(prop = Freq/sum(Freq))
+  
+  p <- ggplot(data = plotTable, mapping = aes(x = Reference, y = Prediction, fill = goodbad, alpha = Freq)) +
+    geom_tile() +
+    geom_text(aes(label = Freq), vjust = .5, fontface  = "bold", alpha = 1) +
+    scale_fill_manual(values = c(high = "#009194", low="#FF9966")) +
+    theme_bw() +
+    xlim(rev(levels(table$Reference))) +
+    ggtitle(paste("Confusion Matrix -", model_name))
+  
+  ggsave(paste0("confusion_matrix_", model_name, ".png"), plot = p, width = 6, height = 4, dpi = 300)
+}
+
+
 ```
 
 This function:
@@ -276,7 +296,14 @@ This function:
 ## Function to Plot Learning Curve
 
 ```r
-plot_save_learning_curve <- function(fit_model, model_name)
+
+plot_save_learning_curve <- function(fit_model, model_name) {
+  p <- plot(fit_model, main = paste("Learning Curve -", model_name))
+  png(paste0("learning_curve_", model_name, ".png"), width = 800, height = 600)
+  print(p)
+  dev.off()
+}
+
 ```
 
 This function:
