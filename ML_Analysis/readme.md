@@ -1,313 +1,566 @@
+#  Data preprocessing
+
+## Step 1: Load Required Libraries (Packages)
+
+This step loads all R packages required for data handling, preprocessing, analysis, and visualization.
 
 
 
-#### Step 1: Load Required Libraries (Packages)
+## Step 2: Set Up Your Workspace
 
-#### Step 2: Set Up Your Workspace
-
-#### Step 3: Load the Data
-
-#### Step 4: Clean and Explore the Data (Preprocessing & EDA)
-This big block `{ ... }` checks, cleans, and reshapes the data. EDA means "Exploratory Data Analysis"—just looking around to spot issues.
-
-- **Check the basics**:
-  ```r
-  str(df)  # Shows data types (e.g., numbers, text)
-  dim(df)  # Rows x columns (e.g., 1000 genes x 20 samples)
-  ```
-  
-- **Remove missing values**:
-  ```r
-  df <- df[complete.cases(df), ]  # Drops rows with any NA (empty cells)
-  head(df); dim(df)  # Peek and check size again
-  ```
- 
-- **Average duplicate genes** (if genes repeat):
-  ```r
-  x <- df  # Copy data
-  x <- do.call(rbind, lapply(lapply(split(x, x$DEGs), `[`, 2:ncol(x)), colMeans))  # Groups by gene (DEGs column), averages values across duplicates
-  dim(x)
-  ```
-  - **What it does**: Splits data by gene name (in "DEGs" column), averages the numeric columns for duplicates, then stacks them back.
-  - **Why?**: Microarray data often has repeated genes; averaging cleans it to one row per gene.
-  - **Simple tip**: Output now has genes as rows (no "DEGs" column—it's now row names).
-
-- **Fix row names** (turn hidden row labels into a visible column):
-  ```r
-  x <- data.frame(x)
-  x <- tibble::rownames_to_column(x, var="Symbols")  # Makes row names a new "Symbols" column
-  head(x); dim(x)
-  df <- x  # Update main table
-  ```
-
-- **Transpose (flip) the table** (genes to columns, samples to rows):
-  ```r
-  library(sjmisc)
-  df_t <- rotate_df(df, cn=T)  # Flips rows/columns; keeps column names
-  Symbols <- colnames(df[-1])  # Grabs old column names (now rows)
-  df_t <- cbind(Symbols, df_t)  # Adds them as a new column
-  write.csv(df_t, "transposed_table.csv", row.names=F)  # Saves flipped version
-  df_t <- read.csv("transposed_table.csv", h=T)  # Reloads it
-  dim(df_t); df_t[1]  # Check size and first column
-  ```
-  - **What it does**: Original: Rows=genes, Columns=samples. Now: Rows=samples, Columns=genes. Saves/ reloads to fix any glitches.
-
-- **Clean sample labels** (e.g., from "GSM1234_NORMAL.CEL" to "NORMAL"):
-  ```r
-  df_t$Symbols <- sub(".*_(.*?)\\.CEL", "\\1", df_t$Symbols)  # Extracts text between last "_" and ".CEL" (e.g., "NORMAL" or "CANCER")
-  df_t[1]  # Check first column
-  ```
-  - **What it does**: Uses regex (pattern matching) to strip file extras, keeping just the label (Normal/Cancer).
-  
-
-- **Convert labels to factors** (categorical data):
-  ```r
-  df_t[1] <- factor(df_t$Symbols)  # Turns text labels into categories R understands
-  str(df_t)
-  df <- df_t  # Final update
-  ```
-
-- **Final peek**:
-  ```r
-  str(df); df <- data.frame(df); head(df)
-  ```
-  - Just double-checks the cleaned table.
-
-#### Step 5: Visualize the Data (Simple Plots)
-Plots help spot outliers or imbalances (e.g., more Normal samples?).
-
-- **Box-and-Whisker Plots** (for each gene/feature):
-  ```r
-  png("box_and_whisker_plots.png")  # Saves plot as image
-  par(mfrow=c(2,4))  # Arranges 2 rows x 4 columns of mini-plots
-  for(i in 2:9) {  # Loops over first 8 genes (columns 2-9)
-    boxplot(x[,i], main=names(df)[i], col="blue")  # Box plot per gene; shows spread, median, outliers
-  }
-  dev.off()  # Closes and saves
-  ```
-  - **What it does**: Creates side-by-side box plots for the first few genes. Each box shows data spread (whiskers=range, box=most data, line=average).
- <img width="480" height="480" alt="box_and_whisker_plots" src="https://github.com/user-attachments/assets/418f6c66-284d-47c5-bca5-ef81e8148712" />
-
-- **Bar Plot of Sample Labels** (e.g., count of Normal vs. Cancer):
-  ```r
-  library(ggplot2); library(caret)
-  x <- df[,2:ncol(df)]  # Inputs: All gene columns (features)
-  y <- df[,1]           # Output: Labels (Normal/Cancer)
-  y <- as.factor(y)     # Ensure it's categorical
-  plot(y, col="blue")   # Basic bar chart of label counts
-  ```
-<img width="500" height="450" alt="data" src="https://github.com/user-attachments/assets/b981e9cf-cb0d-4102-bc9e-cdc815f18f6e" />
+Prepare the working environment (e.g., set working directory, clear workspace, set seed if needed).
 
 
 
+## Step 3: Load the Data
 
-###  Building & Comparing ML Models
+Import the raw dataset into R for further preprocessing and analysis.
 
 
 
----
+## Step 4: Clean and Explore the Data (Preprocessing & EDA)
 
-#### Step 1: Setup for Training
+This block performs **data cleaning, transformation, and exploratory data analysis (EDA)**.
+EDA (Exploratory Data Analysis) involves inspecting the data to identify inconsistencies, missing values, and structural issues before modeling.
+
+
+
+### 4.1 Check Basic Data Structure
+
 ```r
-control <- trainControl(method="cv", number=8)  # 8-fold cross-validation: Split train data into 8 parts, train on 7/test on 1, repeat
-metric <- "Accuracy"  # Score models by % correct predictions
-head(df_t)  # Peek at data (samples x genes + Symbols label)
+str(df)  # Displays data types (numeric, character, factor, etc.)
+dim(df)  # Shows dimensions: rows × columns (e.g., genes × samples)
 ```
-- **What**: Sets rules for fair model training (CV prevents "memorizing" data). Accuracy = correct guesses / total.
-- **Why**: CV makes models reliable; accuracy is simple for classification.
-- **Tip**: For imbalanced data (e.g., more Normal), swap metric to "Balanced Accuracy". Add `summaryFunction = twoClassSummary` for ROC/AUC if needed.
 
-#### Step 2: Helper Functions (Reusable Plotting Tools)
-These save time—define once, use for all models.
 
-##### Confusion Matrix Plotter
+
+### 4.2 Remove Missing Values
+
 ```r
-plot_save_cm <- function(cm_table, model_name) {  # cm_table = raw counts, model_name = e.g., "knn"
-  library(ggplot2); library(dplyr)
-  table <- data.frame(cm_table)  # Turn matrix into table
-  plotTable <- table %>%
-    mutate(goodbad = ifelse(Prediction == Reference, "high", "low")) %>%  # Color: Green=correct, Orange=wrong
-    group_by(Reference) %>%  # Group by true label
-    mutate(prop = Freq / sum(Freq))  # % of predictions per true class
-  
-  p <- ggplot(plotTable, aes(x = Reference, y = Prediction, fill = goodbad, alpha = Freq)) +  # Heatmap-style
-    geom_tile() +  # Boxes
-    geom_text(aes(label = Freq), vjust = 0.5, fontface = "bold", alpha = 1) +  # Numbers in boxes
-    scale_fill_manual(values = c(high = "#009194", low = "#FF9966")) +  # Colors
-    theme_bw() + xlim(rev(levels(table$Reference))) +  # Flip x-axis for readability
-    ggtitle(paste("Confusion Matrix -", model_name))
-  
-  ggsave(paste0("confusion_matrix_", model_name, ".png"), plot = p, width = 6, height = 4, dpi = 300)  # Save PNG
-}
+df <- df[complete.cases(df), ]  # Removes rows containing any NA values
+head(df)
+dim(df)  # Re-check dimensions after cleaning
 ```
-- **What**: Turns a confusion matrix (table of predictions vs. reality) into a pretty heatmap PNG.
-- **Why**: Visualizes errors (e.g., false positives = predicted Cancer but Normal). Diagonal = correct.
-- **Tip**: Example output: Green boxes on diagonal (high accuracy), orange off-diagonal (mistakes).
 
-##### Learning Curve Plotter
+**Why?**
+Missing values can distort statistical analysis and machine learning models.
+
+
+
+### 4.3 Average Duplicate Genes (If Present)
+
 ```r
-plot_save_learning_curve <- function(fit_model, model_name) {
-  p <- plot(fit_model, main = paste("Learning Curve -", model_name))  # Caret's built-in plot: Accuracy vs. model params
-  png(paste0("learning_curve_", model_name, ".png"), width = 800, height = 600)
-  print(p)
-  dev.off()  # Saves PNG
-}
+x <- df  # Create a copy of the dataset
+
+x <- do.call(
+  rbind,
+  lapply(
+    lapply(split(x, x$DEGs), `[`, 2:ncol(x)),
+    colMeans
+  )
+)
+
+dim(x)
 ```
-- **What**: Plots how model performance changes with tweaks (e.g., more neighbors in kNN).
-- **Why**: Shows if model improves or overfits (e.g., train accuracy high, test low = bad).
-- **Tip**: For Logistic Regression, it uses a custom version later— this is for others.
 
-#### Step 3: Build the 6 Models
-Each follows: **Train → Importance Plot → Predict → Evaluate → Save Plots**. Uses `train()` from caret (easy wrapper). Assumes binary labels ("Normal"/"Cancer").
+**What this does:**
 
-##### 1. k-Nearest Neighbors (kNN) – Simple "Vote by Neighbors"
+* Splits the dataset by gene names in the `DEGs` column
+* Computes the column-wise mean for duplicated genes
+* Recombines them into a single table
+
+**Why this is needed:**
+
+* Microarray datasets often contain multiple probes per gene
+* Averaging ensures **one row per gene**
+
+> **Note:** After this step, gene names become row names instead of a column.
+
+
+
+### 4.4 Convert Row Names to a Column
+
 ```r
-set.seed(7)  # Random seed for reproducibility
-fit.knn <- train(Symbols ~ ., data = train, method = "knn", metric = metric, trControl = control)  # Train: Predict label from all genes
-fit.knn  # Shows best k (neighbors) and CV accuracy
+x <- data.frame(x)
+x <- tibble::rownames_to_column(x, var = "Symbols")
 
-# Feature Importance (top genes)
+head(x)
+dim(x)
+
+df <- x  # Update the main dataset
+```
+
+**Purpose:**
+Makes gene identifiers explicit by converting row names into a visible column (`Symbols`).
+
+
+
+### 4.5 Transpose the Dataset (Genes → Columns, Samples → Rows)
+
+```r
+library(sjmisc)
+
+df_t <- rotate_df(df, cn = TRUE)  # Transpose the data
+Symbols <- colnames(df[-1])       # Extract original column names
+
+df_t <- cbind(Symbols, df_t)      # Add them as a new column
+write.csv(df_t, "transposed_table.csv", row.names = FALSE)
+
+df_t <- read.csv("transposed_table.csv", header = TRUE)
+
+dim(df_t)
+df_t[1]
+```
+
+**What this does:**
+
+* Original format:
+
+  * Rows = genes
+  * Columns = samples
+* New format:
+
+  * Rows = samples
+  * Columns = genes
+
+Saving and reloading helps avoid formatting inconsistencies after transposition.
+
+
+
+### 4.6 Clean Sample Labels
+
+```r
+df_t$Symbols <- sub(
+  ".*_(.*?)\\.CEL",
+  "\\1",
+  df_t$Symbols
+)
+
+df_t[1]
+```
+
+**What this does:**
+
+* Uses regular expressions to extract clean class labels
+* Example:
+  `"GSM1234_NORMAL.CEL"` → `"NORMAL"`
+
+This simplifies downstream classification tasks (e.g., Normal vs Cancer).
+
+
+
+### 4.7 Convert Class Labels to Factors
+
+```r
+df_t[1] <- factor(df_t$Symbols)
+str(df_t)
+
+df <- df_t  # Final cleaned dataset
+```
+
+**Why?**
+
+* Factors are required for classification models in R
+* Ensures R treats labels as categorical, not text
+
+
+
+### 4.8 Final Inspection
+
+```r
+str(df)
+df <- data.frame(df)
+head(df)
+```
+
+
+<img width="480" height="480" alt="box_and_whisker_plots" src="https://github.com/user-attachments/assets/409f5c65-ae37-4e66-b8a1-72f2bee6d258" />
+
+
+<img width="480" height="480" alt="data" src="https://github.com/user-attachments/assets/b981e9cf-cb0d-4102-bc9e-cdc815f18f6e" />
+
+
+
+
+
+
+
+
+#  Building & Comparing ML Models
+
+
+
+## Importing Required Libraries
+
+```r
+library("readxl")  
+library("tidyverse")
+library("caret")
+library("glmnet")
+library(kernlab)
+library(randomForest)
+library(e1071)
+library(rpart)
+library(xgboost)
+library(pROC)
+library(cowplot)
+library(ggplot2)
+library(dplyr)
+library(sjmisc)
+library(tibble)
+```
+
+### Purpose of each library
+
+| Package        | Why it’s used                                           |
+| -------------- | ------------------------------------------------------- |
+| `readxl`       | Read Excel files                                        |
+| `tidyverse`    | Data manipulation (`dplyr`) + visualization (`ggplot2`) |
+| `caret`        | **Core ML framework** (training, CV, evaluation)        |
+| `glmnet`       | Regularized regression (LASSO, Ridge, Elastic Net)      |
+| `kernlab`      | Kernel-based models (used internally by caret)          |
+| `randomForest` | Random Forest algorithm                                 |
+| `e1071`        | SVM and other ML utilities                              |
+| `rpart`        | Decision Trees                                          |
+| `xgboost`      | Gradient boosting models                                |
+| `pROC`         | ROC curves and AUC                                      |
+| `cowplot`      | Combine multiple ggplots                                |
+| `sjmisc`       | Helper functions                                        |
+| `tibble`       | Modern data frames                                      |
+
+ Even though you train **kNN here**, these libraries allow **multiple models** in the same script.
+
+
+
+## Cross-Validation Setup
+
+```r
+control <- trainControl(method="cv", number=8)
+metric <- "Accuracy"
+```
+
+### What this does
+
+* `trainControl()` defines **how models are trained and validated**
+* `method="cv"` → **k-fold cross-validation**
+* `number=8` → data split into **8 folds**
+
+ **Why cross-validation?**
+
+* Reduces overfitting
+* Gives more reliable performance estimates
+
+### Metric
+
+```r
+metric <- "Accuracy"
+```
+
+This tells `caret` to **optimize Accuracy** when selecting the best model.
+
+
+## Inspecting the Dataset
+
+```r
+head(df_t)
+```
+
+Displays the **first 6 rows** of `df_t` to:
+
+* Check column names
+* Verify data types
+* Ensure response variable exists
+
+*(Likely `Symbols` is your class label)*
+
+
+
+## Storage for Model Results
+
+```r
+model_accuracies <- list()
+```
+
+Creates an **empty list** to store accuracy values for:
+
+* kNN
+* Random Forest
+* SVM
+* XGBoost (later)
+
+This allows **easy comparison of models**.
+
+
+
+# 6. Function to Plot & Save Confusion Matrix
+
+```r
+plot_save_cm <- function(cm_table, model_name) {
+```
+
+This function:
+
+* Takes a **confusion matrix table**
+* Produces a **publication-quality heatmap**
+* Saves it as a PNG file
+
+
+
+### Step-by-step inside the function
+
+#### Convert table to data frame
+
+```r
+table <- data.frame(cm_table)
+```
+
+Caret confusion matrices are tables → converted to data frame for plotting.
+
+
+
+#### Mark correct vs incorrect predictions
+
+```r
+mutate(goodbad = ifelse(table$Prediction == table$Reference, "high", "low"))
+```
+
+* **Correct prediction** → `"high"`
+* **Incorrect prediction** → `"low"`
+
+Used later for color coding.
+
+
+
+#### Compute proportions
+
+```r
+group_by(Reference) %>%
+mutate(prop = Freq/sum(Freq))
+```
+
+Calculates **class-wise proportions**, useful for imbalanced datasets.
+
+
+
+#### Plot confusion matrix
+
+```r
+ggplot(...) +
+geom_tile() +
+geom_text(aes(label = Freq)) +
+scale_fill_manual(...)
+```
+
+* `geom_tile()` → heatmap cells
+* `geom_text()` → numbers in cells
+* Green (`#009194`) → correct
+* Orange (`#FF9966`) → incorrect
+
+
+
+#### Save plot
+
+```r
+ggsave(paste0("confusion_matrix_", model_name, ".png"))
+```
+
+Each model gets its own file:
+
+```
+confusion_matrix_knn.png
+```
+
+
+
+## Function to Plot Learning Curve
+
+```r
+plot_save_learning_curve <- function(fit_model, model_name)
+```
+
+This function:
+
+* Uses `caret::plot()`
+* Shows **model performance vs training set size**
+* Helps diagnose:
+
+  * Underfitting
+  * Overfitting
+
+```r
+png(...)
+print(p)
+dev.off()
+```
+
+Saves the learning curve as an image.
+
+
+
+## k-Nearest Neighbors Model (Model 1)
+
+###  Set Random Seed
+
+```r
+set.seed(7)
+```
+
+Ensures **reproducibility**:
+
+* Same CV splits
+* Same results every run
+
+
+
+### Train kNN Model
+
+```r
+fit.knn <- train(Symbols~., 
+                 data=train, 
+                 method="knn", 
+                 metric=metric, 
+                 trControl=control)
+```
+
+### Breakdown
+
+| Component           | Meaning                                        |
+| ------------------- | ---------------------------------------------- |
+| `Symbols ~ .`       | Predict `Symbols` using **all other features** |
+| `data=train`        | Training dataset                               |
+| `method="knn"`      | k-Nearest Neighbor algorithm                   |
+| `metric="Accuracy"` | Optimize accuracy                              |
+| `trControl=control` | 8-fold CV                                      |
+
+ `caret` automatically:
+
+* Tunes `k`
+* Chooses best `k` using CV
+
+
+
+### Feature Importance
+
+```r
 varImp(fit.knn)
-p1 <- plot(varImp(fit.knn), top = 30, main = "kNN")  # Bar plot of influential genes
-p2 <- plot(fit.knn, main = "kNN")  # Performance plot
-plot_grid(p1, p2)  # Side-by-side (needs cowplot)
+```
 
-png("feature_importance_knn.png", width = 800, height = 600)
-plot(varImp(fit.knn), top = 30, main = "Feature Importance - kNN")
-dev.off()  # Save PNG
+* Computes **importance scores** based on how features affect prediction
+* For kNN, importance is **distance-based**
 
-# Predict & Evaluate
+
+
+### Plot feature importance
+
+```r
+plot(varImp(fit.knn), top = 30)
+```
+
+Shows **top 30 features** contributing most to classification.
+
+ Useful for:
+
+* Biomarker discovery
+* Feature selection
+* Biological interpretation
+
+
+
+### Combine Plots
+
+```r
+plot_grid(p1, p2)
+```
+
+Uses `cowplot` to place:
+
+* Feature importance
+* Model performance
+  side by side.
+
+
+
+###  Save Feature Importance Plot
+
+```r
+png("feature_importance_knn.png")
+plot(varImp(fit.knn), top = 30)
+dev.off()
+```
+
+
+
+## Prediction on Test Data
+
+```r
 pred.knn <- predict(fit.knn, newdata = test)
-cm_knn <- confusionMatrix(pred.knn, test$Symbols, positive = "Cancer")  # Table + stats (sensitivity, etc.)
-print(cm_knn)
-model_accuracies$knn <- cm_knn$overall["Accuracy"]  # Store score
-plot_save_cm(cm_knn$table, "knn")  # Save CM plot
-plot_save_learning_curve(fit.knn, "knn")  # Save curve
 ```
-- **What**: Classifies by averaging "k" similar samples (e.g., k=5: vote of 5 closest).
-- **Why**: Fast, intuitive—no assumptions about data shape.
-- **Tip**: Good for gene data; tune k via CV. If accuracy low, scale genes first (`preProcess = c("center", "scale")` in train).
-<img width="600" height="500" alt="confusion_matrix_knn" src="https://github.com/user-attachments/assets/c85d0273-3630-4a90-95f5-68dce8ffaf5e" />
 
-<img width="400" height="300" alt="feature_importance_knn" src="https://github.com/user-attachments/assets/964657d8-08b2-4a3a-aa64-a8134c0300c6" />
-<img width="475" height="200" alt="fit_knn" src="https://github.com/user-attachments/assets/35175ca9-ede6-4925-803d-4b3c5e488861" />
-<img width="337" height="257" alt="knn_evaluation" src="https://github.com/user-attachments/assets/33811bed-8c56-4f36-81e3-075909b7537f" />
-<img width="400" height="300" alt="learning_curve_knn" src="https://github.com/user-attachments/assets/5f64e514-a5d8-49ed-9556-8f56e6335ba0" />
-<img width="367" height="245" alt="VIMP_knn" src="https://github.com/user-attachments/assets/eb7ab35a-23e9-49ee-a663-4b54a260e941" />
+* Applies trained kNN model
+* Generates **class predictions** for unseen data
 
-##### 2. Support Vector Machine (SVM) – Radial Kernel
-Similar structure:
+
+
+## Model Evaluation
+
 ```r
-set.seed(101)
-fit.svm <- train(Symbols ~ ., data = train, method = "svmRadial", metric = metric, trControl = control)
-# ... (importance plot, predict, cm_svm, store accuracy, save plots like above)
+cm_knn <- confusionMatrix(pred.knn, test$Symbols, positive = "Cancer")
 ```
-- **What**: Draws a "boundary" to separate classes; radial = handles curvy patterns.
-- **Why**: Robust to outliers; great for high-dimensional gene data.
-- **Tip**: `svmRadial` tunes cost/sigma. Add `tuneLength=10` for more tweaks.
 
-##### 3. Random Forest (RF) – Ensemble of Trees
-Similar:
+### What this computes
+
+* Confusion matrix
+* Accuracy
+* Sensitivity
+* Specificity
+* Precision
+* F1-score
+
+ `positive = "Cancer"`
+Treats **Cancer** as the positive class (important for biomedical tasks).
+
+
+
+### Store accuracy
+
 ```r
-set.seed(123)
-fit.rf <- train(Symbols ~ ., data = train, method = "rf", metric = metric, trControl = control)
-# ... (importance, predict, cm_rf, etc.)
+model_accuracies$knn <- cm_knn$overall["Accuracy"]
 ```
-- **What**: Builds many decision trees, averages votes.
-- **Why**: Handles interactions between genes; built-in importance ranking.
-- **Tip**: Slow on big data—add `tuneGrid = expand.grid(mtry = c(2,4,6))` to tune.
 
-##### 4. Logistic Regression (LR) – Simple Linear Classifier
-Similar, but with custom learning curve:
+Now you can later compare:
+
 ```r
-set.seed(101)
-fit.lr <- train(Symbols ~ ., data = train, method = "glm", family = "binomial", metric = metric, trControl = control)
-# ... (importance plot for top 10 genes, predict, cm_lr, etc.)
-
-# Custom Learning Curve (simulates adding more training data)
-custom_learning_curve <- function(train, test, formula, sizes = seq(0.1, 1.0, by = 0.1), seed = 80, filename = "learning_curve_lr.png") {
-  set.seed(seed); accuracies <- c()
-  for (s in sizes) {
-    idx <- sample(1:nrow(train), floor(s * nrow(train)))  # Subset train data
-    train_subset <- train[idx, ]
-    fitlr <- glm(formula, data = train_subset, family = binomial)  # Fit GLM
-    probs <- predict(fitlr, test, type = "response")  # Probabilities
-    preds <- ifelse(probs > 0.5, "Cancer", "Normal")  # Threshold to labels
-    cm <- confusionMatrix(as.factor(preds), test$Symbols, positive = "Cancer")
-    accuracies <- c(accuracies, cm$overall["Accuracy"])
-  }
-  results <- data.frame(TrainingSize = sizes * 100, Accuracy = accuracies)
-  png(filename, width = 800, height = 600)
-  plot(results$TrainingSize, results$Accuracy, type = "b", pch = 19,  # Line + points
-       xlab = "Training Set Size (%)", ylab = "Accuracy", main = "Custom Learning Curve - LR")
-  dev.off()
-  return(results)
-}
-results_lr <- custom_learning_curve(train, test, Symbols ~ .)  # Run & print
+model_accuracies
 ```
-- **What**: Fits a line to probabilities (sigmoid curve).
-- **Why**: Interpretable (coefficients = gene effects); baseline for comparison.
-- **Tip**: Assumes linear relationships—use if genes are pre-scaled. Custom curve shows if more data helps.
 
-##### 5. Decision Tree (DT)
+
+
+## Plot & Save Evaluation Outputs
+
+### Confusion Matrix
+
 ```r
-set.seed(101)
-fit.dt <- train(Symbols ~ ., data = train, method = "rpart", metric = "Accuracy", trControl = control,
-                tuneGrid = expand.grid(cp = seq(0.0001, 0.1, 0.005)),  # Tune complexity (cp: prune threshold)
-                control = rpart.control(minsplit = 2, minbucket = 1))  # Allow small splits
-# ... (importance, predict, cm_dt, etc.)
+plot_save_cm(c1, "knn")
 ```
-- **What**: Tree of yes/no splits (e.g., "If GeneA > 5, then Cancer?").
-- **Why**: Visual (plot tree with `fancyRpartPlot`), easy to explain.
-- **Tip**: Pruning prevents overfitting; low minsplit for small datasets.
 
-##### 6. XGBoost – Advanced Boosting
-Similar:
+Creates:
+
+```
+confusion_matrix_knn.png
+```
+
+
+
+### Learning Curve
+
 ```r
-set.seed(101)
-fit.xgb <- train(Symbols ~ ., data = train, method = "xgbTree", metric = metric, trControl = control)
-# ... (importance—fix bug: change plot(varImp(fit.dt)) to fit.xgb, predict, cm_xgb, etc.)
+plot_save_learning_curve(fit.knn, "knn")
 ```
-- **What**: Builds trees sequentially, fixing previous errors.
-- **Why**: Often top performer on tabular data like genes; handles missing values.
-- **Tip**: Fast; add `tuneGrid` for eta/max_depth. Bug in code: Use `fit.xgb` in plot.
 
-#### Step 4: Compare Models
-```r
-# List of accuracies (from earlier)
-acc_df <- data.frame(Model = names(model_accuracies), Accuracy = unlist(model_accuracies))
+Creates:
 
-# Bar Plot
-p <- ggplot(acc_df, aes(x = reorder(Model, Accuracy), y = Accuracy, fill = Model)) +
-  geom_bar(stat = "identity", width = 0.6) +
-  ylim(0, 1) + geom_text(aes(label = round(Accuracy, 3)), vjust = -0.5, size = 5) +  # Labels on bars
-  ggtitle("Model Accuracy Comparison") + xlab("Models") + ylab("Accuracy") +
-  theme_bw() + theme(...) + coord_flip()  # Horizontal bars for readability
-
-ggsave("model_accuracy_comparison.png", plot = p, width = 8, height = 6, dpi = 300)
-print(acc_df)  # Console table
 ```
-- **What**: Bar chart + table of % accuracy per model.
-- **Why**: Quick winner (e.g., XGBoost often highest). Example table:
-  
-  | Model | Accuracy |
-  |-------|----------|
-  | xgb   | 0.95    |
-  | rf    | 0.92    |
-  | ...   | ...     |
+learning_curve_knn.png
+```
 
-- **Tip**: Sort by Accuracy descending. For ties, check sensitivity (recall for Cancer).
 
-### Overall: What You Get & Next Steps
-- **Outputs**: 6x (CM PNG + Learning Curve PNG + Importance PNG) + Comparison PNG + Console stats.
-- **Typical Results**: 80-95% accuracy on gene data; RF/XGB shine.
-- **Tips to Run/Improve**:
-  - Add train/test split if missing (see above).
-  - Scale data: Add `preProcess = c("center", "scale")` in train() for distance-based models (kNN/SVM).
-  - More metrics: Use `pROC` for ROC curves (`roc(test$Symbols ~ as.numeric(pred.prob))`).
-  - Overfitting? If train acc >> test, increase CV folds.
-  - Shorter? Wrap models in a loop: `models <- c("knn", "svmRadial", ...); for(m in models) { fit <- train(... method=m); ... }`.
-
-This turns data into predictions—great for biomarker discovery! If errors (e.g., no train/test), share output. 🚀
-
-  
