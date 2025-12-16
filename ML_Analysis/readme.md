@@ -390,3 +390,421 @@ cm_knn <- confusionMatrix(pred.knn, test$Symbols, positive = "Cancer")
 ```
 
 
+# Machine Learning Models: Training, Evaluation, and Comparison
+
+
+
+# Model 2: Support Vector Machine (SVM – Radial Kernel)
+
+## Model Training
+
+```r
+set.seed(101)
+fit.svm <- train(
+  Symbols ~ ., 
+  data = train, 
+  method = "svmRadial", 
+  metric = metric, 
+  trControl = control
+)
+fit.svm
+````
+<img width="826" height="422" alt="fit_svm" src="https://github.com/user-attachments/assets/2230a39e-2062-4fb3-9204-1ec35dfc90af" />
+
+### Explanation
+
+* `set.seed(101)` ensures reproducibility
+* `svmRadial` uses a **Radial Basis Function (RBF) kernel**
+* SVM finds an **optimal separating hyperplane** in a high-dimensional space
+* The radial kernel allows **non-linear decision boundaries**
+* Hyperparameters (`C`, `sigma`) are tuned automatically by `caret`
+
+---
+
+## Feature Importance (SVM)
+
+```r
+varImp(fit.svm)
+```
+
+* Measures how much each feature contributes to classification
+* For SVM, importance is estimated indirectly via model sensitivity
+
+```r
+plot(varImp(fit.svm), top = 30)
+```
+
+###  Feature Importance Plot (SVM)
+
+> <img width="800" height="600" alt="feature_importance_svm" src="https://github.com/user-attachments/assets/0ee2234b-8690-4eed-8cdf-9a4048ea31c7" />
+
+
+---
+
+## Model Prediction
+
+```r
+pred.svm <- predict(fit.svm, newdata = test)
+```
+
+* Applies the trained SVM model to unseen test data
+* Outputs predicted class labels
+
+---
+
+## Model Evaluation
+
+```r
+cm_svm <- confusionMatrix(pred.svm, test$Symbols, positive = "Cancer")
+print(cm_svm)
+```
+<img width="655" height="547" alt="Evaluation_SVM" src="https://github.com/user-attachments/assets/b946d177-e2f4-45c0-aea2-0a84e04540ae" />
+
+### Metrics Computed
+
+* Accuracy
+* Sensitivity (Recall)
+* Specificity
+* Precision
+* F1-score
+
+```r
+model_accuracies$svm <- cm_svm$overall["Accuracy"]
+```
+
+---
+
+## Confusion Matrix (SVM)
+
+> <img width="1800" height="1200" alt="confusion_matrix_svm" src="https://github.com/user-attachments/assets/0cfe4d37-06bf-40a2-85d6-05ce35c92d40" />
+
+
+---
+
+## Learning Curve (SVM)
+
+> <img width="800" height="600" alt="learning_curve_svm" src="https://github.com/user-attachments/assets/7800aee0-8f3e-44d8-a9c8-cad37594d9c2" />
+
+---
+
+# Model 3: Random Forest
+
+## Model Training
+
+```r
+set.seed(123)
+fit.rf <- train(
+  Symbols ~ ., 
+  data = train, 
+  method = "rf",
+  metric = metric,
+  trControl = control
+)
+fit.rf
+```
+<img width="767" height="392" alt="Fit_RF" src="https://github.com/user-attachments/assets/5a4f814b-f7ed-4543-bc25-8d0afe8b74cc" />
+
+### Explanation
+
+* Random Forest is an **ensemble of decision trees**
+* Each tree is trained on a bootstrap sample
+* Feature randomness reduces overfitting
+* Final prediction is based on **majority voting**
+
+---
+
+## Feature Importance (Random Forest)
+
+```r
+varImp(fit.rf)
+```
+
+* RF computes importance using:
+
+  * Mean Decrease in Accuracy
+  * Mean Decrease in Gini
+
+```r
+plot(varImp(fit.rf), top = 30)
+```
+
+###  Feature Importance Plot (RF)
+
+> <img width="800" height="600" alt="feature_importance_rf" src="https://github.com/user-attachments/assets/ce618fc7-dd8f-4331-a6de-ddefc2e29c7b" />
+
+
+---
+
+## Prediction and Evaluation
+
+```r
+pred.rf <- predict(fit.rf, newdata = test)
+cm_rf <- confusionMatrix(pred.rf, test$Symbols, positive = "Cancer")
+model_accuracies$rf <- cm_rf$overall["Accuracy"]
+```
+<img width="557" height="561" alt="Evaluation_rf" src="https://github.com/user-attachments/assets/41f58aca-117d-4e17-a8ba-49ac49174bff" />
+
+---
+
+## Confusion Matrix (RF)
+
+> <img width="1800" height="1200" alt="confusion_matrix_rf" src="https://github.com/user-attachments/assets/59504fc1-dbc0-47ae-a9e1-1e9e45d3daab" />
+
+
+---
+
+## Learning Curve (RF)
+
+> <img width="800" height="600" alt="learning_curve_rf" src="https://github.com/user-attachments/assets/125345c6-665c-4876-9dc4-aa953775b773" />
+
+
+---
+
+# Model 4: Logistic Regression
+
+## Model Training
+
+```r
+set.seed(101)
+fit.lr <- train(
+  Symbols ~ ., 
+  data = train, 
+  method = "glm", 
+  family = "binomial",
+  metric = metric,
+  trControl = control
+)
+fit.lr
+```
+<img width="557" height="312" alt="fit_lr" src="https://github.com/user-attachments/assets/cb4d5993-4149-477d-ac91-b30229f8adcd" />
+<img width="415" height="256" alt="results_lr" src="https://github.com/user-attachments/assets/911befea-389f-4576-a749-6c88c97a0a46" />
+
+### Explanation
+
+* Logistic regression models **probability of class membership**
+* Uses a **logit (sigmoid) function**
+* Coefficients represent log-odds contribution of each feature
+* Suitable as a **baseline interpretable model**
+
+---
+
+## Feature Importance (Logistic Regression)
+
+```r
+varImp(fit.lr)
+plot(varImp(fit.lr), top = 10)
+```
+
+### 📌 Feature Importance Plot (LR)
+
+> <img width="800" height="600" alt="feature_importance_lr" src="https://github.com/user-attachments/assets/e4bd6497-428a-49d7-bf9e-b33ca511d2c3" />
+
+
+---
+
+## Prediction and Evaluation
+
+```r
+pred.lr <- predict(fit.lr, newdata = test)
+cm_lr <- confusionMatrix(pred.lr, test$Symbols, positive = "Cancer")
+model_accuracies$lr <- cm_lr$overall["Accuracy"]
+```
+<img width="602" height="558" alt="Evaluation_LR" src="https://github.com/user-attachments/assets/0a9e79db-524f-4eab-951b-cc0520fcae37" />
+
+---
+
+## Confusion Matrix (LR)
+
+> <img width="1800" height="1200" alt="confusion_matrix_lr" src="https://github.com/user-attachments/assets/6ae55376-6d8e-4573-a480-3026b5ed8194" />
+
+
+---
+
+## Custom Learning Curve (Logistic Regression)
+
+### Purpose
+
+* `caret` does not provide learning curves for `glm`
+* Custom function evaluates performance across increasing training sizes
+
+```r
+results_lr <- custom_learning_curve(train, test, Symbols ~ .)
+```
+
+###  Learning Curve Plot (LR)
+
+> *(Paste learning curve image here)*
+
+---
+
+# Model 5: Decision Tree
+
+## Model Training
+
+```r
+set.seed(101)
+fit.dt <- train(
+  Symbols ~ ., 
+  data = train,
+  method = "rpart",
+  metric = "Accuracy",
+  trControl = control,
+  tuneGrid = expand.grid(cp = seq(0.0001, 0.1, 0.005)),
+  control = rpart.control(minsplit = 2, minbucket = 1)
+)
+fit.dt
+```
+<img width="852" height="727" alt="fit_DT" src="https://github.com/user-attachments/assets/9433b08c-b0d1-4d92-bb6b-614a16faed90" />
+
+### Explanation
+
+* Decision trees split data using **if–else rules**
+* `cp` controls tree complexity (pruning)
+* Lower `minsplit` allows deeper trees
+
+---
+
+## Feature Importance (Decision Tree)
+
+```r
+varImp(fit.dt)
+plot(varImp(fit.dt), top = 30)
+```
+
+### 📌 Feature Importance Plot (DT)
+
+> <img width="800" height="600" alt="feature_importance_DT" src="https://github.com/user-attachments/assets/0cf21dbe-efc6-47ca-a2ce-85829206df43" />
+
+
+---
+
+## Prediction and Evaluation
+
+```r
+pred.dt <- predict(fit.dt, newdata = test)
+cm_dt <- confusionMatrix(pred.dt, test$Symbols, positive = "Cancer")
+model_accuracies$dt <- cm_dt$overall["Accuracy"]
+```
+<img width="541" height="548" alt="Evaluation_dt" src="https://github.com/user-attachments/assets/b69dea08-0372-4ced-8c2d-b919a2334bd1" />
+
+---
+
+## Confusion Matrix (DT)
+
+> <img width="1800" height="1200" alt="confusion_matrix_dt" src="https://github.com/user-attachments/assets/42d65a9d-c4dc-4f27-8eec-6e91c2f21f54" />
+
+
+---
+
+## Learning Curve (DT)
+
+> <img width="800" height="600" alt="learning_curve_dt" src="https://github.com/user-attachments/assets/def82392-f7d8-483f-89c0-b403ca7924bb" />
+
+
+---
+
+# Model 6: XGBoost
+
+## Model Training
+
+```r
+set.seed(101)
+fit.xgb <- train(
+  Symbols ~ ., 
+  data = train, 
+  method = "xgbTree",
+  metric = metric,
+  trControl = control
+)
+fit.xgb
+```
+<p align="center">
+<img width="50" height="500" alt="fit_xgb" src="https://github.com/user-attachments/assets/ac3d76b1-b031-4eed-89c0-9dc8d5b19fc1" />
+<img width="500" height="500" alt="XGB_fit" src="https://github.com/user-attachments/assets/b2dc2654-f602-46ca-a508-e7adf474d18c" />
+</p>
+### Explanation
+
+* XGBoost is a **gradient boosting algorithm**
+* Sequentially corrects errors of previous trees
+* Strong performance on high-dimensional omics data
+* Includes regularization to prevent overfitting
+
+---
+
+## Feature Importance (XGBoost)
+
+```r
+varImp(fit.xgb)
+plot(varImp(fit.xgb), top = 30)
+```
+
+###  Feature Importance Plot (XGB)
+<p align="center">
+> <img width="300" height="200" alt="feature_importance_XGB" src="https://github.com/user-attachments/assets/4f299fbc-5742-460d-a7a2-91b4bb12bbe5" />
+</p>
+
+---
+
+## Prediction and Evaluation
+
+```r
+pred.xgb <- predict(fit.xgb, newdata = test)
+cm_xgb <- confusionMatrix(pred.xgb, test$Symbols, positive = "Cancer")
+model_accuracies$xgb <- cm_xgb$overall["Accuracy"]
+```
+<p align="center">
+<img width="587" height="547" alt="Evaluation_xgb" src="https://github.com/user-attachments/assets/048a0787-ef58-48df-8e4c-a4641682ae48" />
+</p>
+---
+
+## Confusion Matrix (XGB)
+<p align="center">
+> <img width="500" height="700" alt="confusion_matrix_xgb" src="https://github.com/user-attachments/assets/440d8ae3-95dc-4a1a-834d-024ad0ca191b" />
+</p>
+
+---
+
+## Learning Curve (XGB)
+<p align="center">
+> <img width="500" height="700" alt="learning_curve_xgb" src="https://github.com/user-attachments/assets/e10a1a73-33a9-4012-900c-021907e08349" />
+</p>
+
+---
+
+# Model Comparison
+
+## Accuracy Table
+
+```r
+acc_df <- data.frame(
+  Model = names(model_accuracies),
+  Accuracy = unlist(model_accuracies)
+)
+print(acc_df)
+```
+
+---
+
+## Model Accuracy Comparison Plot
+
+```r
+ggsave(
+  "model_accuracy_comparison.png", 
+  plot = p, 
+  width = 8, 
+  height = 6, 
+  dpi = 300
+)
+```
+
+###  Accuracy Comparison Bar Plot
+
+
+
+<p align="center">
+  <img width="700" height="500" alt="model_accuracy_comparison" src="https://github.com/user-attachments/assets/296a73b9-156b-4527-a1b5-c6afb9f73378" />
+</p>
+
+---
+
+
