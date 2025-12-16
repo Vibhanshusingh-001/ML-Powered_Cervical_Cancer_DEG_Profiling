@@ -187,13 +187,13 @@ plot_save_learning_curve(fit.knn, "knn")  # Save curve
 - **What**: Classifies by averaging "k" similar samples (e.g., k=5: vote of 5 closest).
 - **Why**: Fast, intuitive—no assumptions about data shape.
 - **Tip**: Good for gene data; tune k via CV. If accuracy low, scale genes first (`preProcess = c("center", "scale")` in train).
-<img width="1800" height="1200" alt="confusion_matrix_knn" src="https://github.com/user-attachments/assets/c85d0273-3630-4a90-95f5-68dce8ffaf5e" />
+<img width="600" height="500" alt="confusion_matrix_knn" src="https://github.com/user-attachments/assets/c85d0273-3630-4a90-95f5-68dce8ffaf5e" />
 
-<img width="800" height="600" alt="feature_importance_knn" src="https://github.com/user-attachments/assets/964657d8-08b2-4a3a-aa64-a8134c0300c6" />
-<img width="775" height="388" alt="fit_knn" src="https://github.com/user-attachments/assets/35175ca9-ede6-4925-803d-4b3c5e488861" />
-<img width="637" height="557" alt="knn_evaluation" src="https://github.com/user-attachments/assets/33811bed-8c56-4f36-81e3-075909b7537f" />
-<img width="800" height="600" alt="learning_curve_knn" src="https://github.com/user-attachments/assets/5f64e514-a5d8-49ed-9556-8f56e6335ba0" />
-<img width="567" height="545" alt="VIMP_knn" src="https://github.com/user-attachments/assets/eb7ab35a-23e9-49ee-a663-4b54a260e941" />
+<img width="400" height="300" alt="feature_importance_knn" src="https://github.com/user-attachments/assets/964657d8-08b2-4a3a-aa64-a8134c0300c6" />
+<img width="475" height="200" alt="fit_knn" src="https://github.com/user-attachments/assets/35175ca9-ede6-4925-803d-4b3c5e488861" />
+<img width="337" height="257" alt="knn_evaluation" src="https://github.com/user-attachments/assets/33811bed-8c56-4f36-81e3-075909b7537f" />
+<img width="400" height="300" alt="learning_curve_knn" src="https://github.com/user-attachments/assets/5f64e514-a5d8-49ed-9556-8f56e6335ba0" />
+<img width="367" height="245" alt="VIMP_knn" src="https://github.com/user-attachments/assets/eb7ab35a-23e9-49ee-a663-4b54a260e941" />
 
 ##### 2. Support Vector Machine (SVM) – Radial Kernel
 Similar structure:
